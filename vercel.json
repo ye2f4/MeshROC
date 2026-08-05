@@ -4,6 +4,5 @@
   "outputDirectory": "build",
   "env": {
     "NPM_CONFIG_REGISTRY": "https://registry.npmmirror.com"
-  },
-  "nodeVersion": "20.x"
+  }
 }
