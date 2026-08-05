@@ -33,8 +33,11 @@ const IconMap = (p) => <Svg {...p}><polygon points="1 6 1 22 8 18 16 22 23 18 23
 const IconX = (p) => <Svg {...p}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Svg>;
 const IconExternalLink = (p) => <Svg {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></Svg>;
 
-// 站点规划器为本地构建产物，部署在 static/site-planner/ 下
-const PLANNER_URL = '/site-planner/index.html';
+// 站点规划器为本地构建产物，部署在 static/planner/ 下
+// 注意：不能放在 static/site-planner/，否则会和 src/pages/site-planner.js
+// 生成的 Docusaurus 路由页 /site-planner/ 产物 build/site-planner/index.html 撞车，
+// 导致 iframe 加载到自身页面（"又打开当前网页"）。放到 static/planner/ 避开冲突。
+const PLANNER_URL = '/planner/index.html';
 
 // 卡片式功能说明
 const FEATURES = [
