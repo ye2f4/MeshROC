@@ -1,0 +1,17 @@
+{
+  "name": "MeshROC 站点规划器",
+  "short_name": "站点规划器",
+  "description": "使用 ITM / Longley-Rice 模型预测 MeshROC 无线电覆盖，全部计算都在你的浏览器本地完成。",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1017",
+  "theme_color": "#1a1b26",
+  "icons": [
+    { "src": "pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
