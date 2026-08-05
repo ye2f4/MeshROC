@@ -1,198 +1,659 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
 import { translate } from '@docusaurus/Translate';
 
-// 离网通信首页（原 /off-grid 页面，提升为站点主页）
-export default function OffGridHome() {
-  const t = (...a) => {
-    const [o, v] = a;
-    if (typeof o === 'string') return translate({ id: o }, v);
-    const vals = v ?? o?.values ?? (o?.count !== undefined ? { count: o.count } : undefined);
-    return translate(o, vals);
-  };
+// Docusaurus 3.x 无 useTranslate hook，用 translate 函数式 API 包装成一致的 t()
+const t = (...args) => {
+  const [opts, values] = args;
+  if (typeof opts === 'string') return translate({ id: opts }, values);
+  const vals = values ?? opts?.values ?? (opts?.count !== undefined ? { count: opts.count } : undefined);
+  return translate(opts, vals);
+};
 
-  // 内联 SVG 图标组件
-  const Icon = ({ path, size = 24 }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {path}
-    </svg>
+/* ---------- 内联图标（复刻 lucide 形状，避免引入缺失依赖） ---------- */
+const Svg = ({ children, className = '', size = 24, ...rest }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    {...rest}
+  >
+    {children}
+  </svg>
+);
+const IconArrowRight = (p) => <Svg {...p}><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></Svg>;
+const IconDownload = (p) => <Svg {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></Svg>;
+const IconFileText = (p) => <Svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><line x1="10" y1="9" x2="8" y2="9" /></Svg>;
+const IconRadio = (p) => <Svg {...p}><circle cx="12" cy="12" r="2" /><path d="M4.93 19.07a10 10 0 0 1 0-14.14M19.07 4.93a10 10 0 0 1 0 14.14M7.76 16.24a6 6 0 0 1 0-8.48M16.24 7.76a6 6 0 0 1 0 8.48" /></Svg>;
+const IconX = (p) => <Svg {...p}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Svg>;
+const IconGlobe = (p) => <Svg {...p}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></Svg>;
+const IconSmartphone = (p) => <Svg {...p}><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12" y2="18" /></Svg>;
+const IconUser = (p) => <Svg {...p}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></Svg>;
+const IconUsers = (p) => <Svg {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></Svg>;
+const IconGithub = (p) => <Svg {...p}><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></Svg>;
+const IconDiscord = (p) => <Svg {...p}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></Svg>;
+const IconMastodon = (p) => <Svg {...p}><path d="M21.58 6.58A12 12 0 0 0 17.5 3.3L17.44 3.3a12 12 0 0 0-11.88 0l-.06 0a12 12 0 0 0-4.08 3.28C.7 9.1.4 12.2.6 15.28l.02.26c.33 3.3 1.36 5.2 2.77 6.46 1.9 1.86 4.04 2.8 6.4 2.96l.2.01c1.5.08 2.96-.16 4.36-.66a12 12 0 0 0 3.8-2.06l.02-.02a1 1 0 0 0-.16-1.5l-.16-.1a1 1 0 0 0-1.32.2 9.5 9.5 0 0 1-3.1 1.7c-1.2.34-2.4.42-3.56.24l-.18-.03c-1.7-.3-3.04-.96-4-1.9a8.6 8.6 0 0 1-1.74-2.86l-.06-.18a9 9 0 0 1-.22-3.5l.06-.3c.16-.78.46-1.5.86-2.16l.12-.2a1 1 0 0 1 1.34-.32l.24.18a1 1 0 0 1 .28 1.28 7 7 0 0 0-.66 1.86l-.04.18a7 7 0 0 0 .24 3.5l.06.18c.37.96.96 1.8 1.74 2.5l.16.12a9.3 9.3 0 0 0 3.16 1.7l.2.04c1.4.2 2.8.06 4.16-.42a9 9 0 0 0 2.84-1.6 1 1 0 0 1 1.4 0l.18.16a1 1 0 0 1 .2 1.34z" /><path d="M14.5 9.8v4.4h-1.7V9.95c0-.74-.32-1.12-1-1.12-.73 0-1.1.3-1.1 1v3.36H9v-4.4c0-.74-.3-1.12-1-1.12-.72 0-1.1.3-1.1 1v3.36H5.6V9.8c0-1.4.92-2.32 2.32-2.32 1 0 1.7.4 2.1 1.2.4-.8 1.1-1.2 2.1-1.2 1.4 0 2.32.92 2.32 2.32z" /></Svg>;
+const IconTwitter = (p) => <Svg {...p}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 18.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" /></Svg>;
+const IconYoutube = (p) => <Svg {...p}><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" /><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" /></Svg>;
+const IconExternalLink = (p) => <Svg {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></Svg>;
+
+/* ---------- 社交链接 ---------- */
+const SOCIALS = [
+  { icon: IconGithub, label: 'GitHub', href: 'https://github.com/ye2f4' },
+  { icon: IconDiscord, label: 'Discord', href: '#' },
+  { icon: IconMastodon, label: 'Mastodon', href: '#' },
+  { icon: IconTwitter, label: 'Twitter', href: '#' },
+  { icon: IconYoutube, label: 'YouTube', href: '#' },
+];
+
+/* ---------- 数字递增动画 ---------- */
+function useCountUp(target, duration = 1200) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let raf;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(target * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
+}
+
+const Stat = ({ value, suffix = '', label }) => {
+  const v = useCountUp(value);
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <div style={{ fontSize: '2.5rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: 'hsl(var(--btn-primary))' }}>
+        {v.toLocaleString()}{suffix}
+      </div>
+      <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.95rem', marginTop: '0.25rem' }}>{label}</div>
+    </div>
   );
+};
 
-  const ICONS = {
-    signal: <path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16" />,
-    network: (
-      <>
-        <rect x="9" y="2" width="6" height="6" rx="1" />
-        <rect x="2" y="16" width="6" height="6" rx="1" />
-        <rect x="16" y="16" width="6" height="6" rx="1" />
-        <path d="M12 8v4M12 12H5v4M12 12h7v4" />
-      </>
-    ),
-    shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
-    battery: (
-      <>
-        <rect x="2" y="7" width="16" height="10" rx="2" />
-        <path d="M22 11v2" />
-      </>
-    ),
-    node: <path d="M5 12h14M12 5v14M5 12a7 7 0 0 0 14 0 7 7 0 0 0-14 0" />,
-    radio: (
-      <>
-        <path d="M4.9 4.9a2 2 0 0 0 0 2.8l12.4 12.4a2 2 0 0 0 2.8 0" />
-        <path d="M9 9l6 6" />
-        <path d="M2 12c4-4 8-4 12 0M10 14c1.5-1.5 3.5-1.5 5 0" />
-      </>
-    ),
-    compass: <path d="m16.24 7.76-1.7 6.05-6.05 1.7 1.7-6.05 6.05-1.7zM12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z" />,
-    book: <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />,
+/* ---------- 设备弹窗 ---------- */
+const DEVICES = [
+  { name: 'T-Beam', desc: 'GPS + LoRa 一体机，适合固定节点与追踪', price: '约 ¥180' },
+  { name: 'T-Echo', desc: '墨水屏手持终端，便携易用', price: '约 ¥260' },
+  { name: 'Heltec V3', desc: '高性价比开发板，社区最热门', price: '约 ¥90' },
+  { name: 'RAK WisBlock', desc: '模块化方案，可自定义传感器', price: '约 ¥220' },
+  { name: 'Seeed WIO Tracker', desc: '带 4G 备份通道的户外终端', price: '约 ¥300' },
+  { name: 'LilyGO T-Deck', desc: '带键盘的全功能掌机', price: '约 ¥380' },
+];
+
+/* 设备刷写器：嵌入 Meshtastic 官方 Web Flasher（国内可达，支持中文，允许 iframe）。
+   原"浏览设备"静态列表已替换为真实刷写工具。 */
+const FLASHER_URL = 'https://flasher.meshtastic.org/';
+
+const DeviceDialog = ({ onClose }) => {
+  const [showDevices, setShowDevices] = useState(false);
+  return (
+    <div
+      className="off-grid-dialog-mask"
+      onClick={onClose}
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          width: 'min(72rem, 100%)',
+          height: 'min(88vh, 900px)',
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRadius: 'var(--radius)',
+          border: '1px solid hsl(var(--border))',
+          background: 'hsl(var(--popover))',
+          color: 'hsl(var(--popover-foreground))',
+          overflow: 'hidden',
+          zIndex: 1,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.25rem', borderBottom: '1px solid hsl(var(--border))' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700 }}>{t({ id: 'offGrid.dialog.title', message: '设备刷写器' })}</h2>
+            <div style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', marginTop: '0.2rem' }}>
+              {t({ id: 'offGrid.dialog.sub', message: '连接设备后在此刷写 / 更新 Meshtastic 固件' })}
+            </div>
+          </div>
+          <button onClick={onClose} aria-label={t({ id: 'offGrid.dialog.close', message: '关闭' })} style={{ background: 'none', border: 'none', color: 'hsl(var(--muted-foreground))', cursor: 'pointer', padding: 4 }}>
+            <IconX size={22} />
+          </button>
+        </div>
+
+        <iframe
+          src={FLASHER_URL}
+          title="Meshtastic Web Flasher"
+          loading="lazy"
+          allow="serial; bluetooth; usb"
+          style={{ flex: 1, width: '100%', border: 'none', background: '#fff' }}
+        />
+
+        <div style={{ borderTop: '1px solid hsl(var(--border))', padding: '0.6rem 1.25rem', background: 'hsl(var(--surface))' }}>
+          <button
+            onClick={() => setShowDevices((v) => !v)}
+            style={{ background: 'none', border: 'none', color: 'hsl(var(--btn-primary))', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', padding: 0 }}
+          >
+            {showDevices ? t({ id: 'offGrid.dialog.collapseList', message: '收起兼容设备列表' }) : t({ id: 'offGrid.dialog.viewList', message: '查看兼容设备列表' })}
+          </button>
+          {showDevices && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem', marginTop: '0.75rem', maxHeight: '160px', overflowY: 'auto' }}>
+              {DEVICES.map((d) => (
+                <div key={d.name} style={{ borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '0.75rem' }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.3rem' }}>{d.name}</div>
+                  <p style={{ fontSize: '0.78rem', color: 'hsl(var(--muted-foreground))', margin: '0 0 0.5rem', lineHeight: 1.5 }}>{d.desc}</p>
+                  <span style={{ fontSize: '0.8rem', color: 'hsl(var(--btn-primary))', fontWeight: 600 }}>{d.price}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+/* ---------- 节点群语料库（后期可由 AI 生成扩充） ----------
+   每条：{ who: 节点代号, text: 消息内容, self?: true 表示"我" } */
+const NODE_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', '野外部落', '中继-01', '山顶哨位', '海岸巡逻', '探路者', '气象站'];
+
+// 离线消息 / 节点动态语料（覆盖上线、信号、位置、GPS、天气、加密、中继、离线等场景）
+const NODE_CORPUS = [
+  '收到，我在 3 号山头，信号良好',
+  '中继节点已上线，覆盖范围扩大约 2 公里',
+  '已切换到 LoRa 通道 0，干扰更小',
+  'GPS 位置已广播，经纬度已写入节点',
+  '前方河谷信号偏弱，建议绕行林木密集区',
+  '加密信道已启用，消息端到端保护',
+  '离线消息缓存 3 条，重新入网后已投递',
+  '风速 12m/s，注意天线固定',
+  'B 节点电量 78%，预计还可运行 14 小时',
+  '发现新节点：F-野外营地，已自动入网',
+  '雨势渐大，建议切换低频段提升穿透',
+  '位置共享已开启，当前海拔 1840 米',
+  '收到撤离指令，正在向集结点移动',
+  '中继链路抖动，已启用备用路由',
+  'C 节点进入低功耗模式，仍可被中继唤醒',
+  '温度 -6℃，电池续航下降，注意保暖',
+  '收到求救信标，坐标已转发给最近的哨位',
+  '河道对岸有信号，可尝试桥接点中继',
+  '固件已升级到 2.4.1，稳定性提升明显',
+  '夜视模式下消息延迟约 1.2 秒，正常',
+  'D 节点请求位置同步，已回传',
+  '雪线以上信号衰减严重，需增加中继密度',
+  '已抵达补给点，物资充足',
+  '收到，保持静默监听，有情况再呼叫',
+  '卫星电话不可用，全部走 LoRa 网络',
+  'E 节点信号满格，作为主中继最合适',
+  '收到天气预警：6 小时后有雷暴，建议停机',
+  '加密密钥已轮换，旧消息无法解密',
+  '离线期间累计收到 7 条消息，已归档',
+  '发现未注册节点，已记录指纹待人工确认',
+  '山体滑坡阻断原路线，启用备用通道',
+  '电量告急，转入仅接收模式省电',
+  '收到地图分片，正在拼接区域态势',
+  '中继-01 负载 45%，链路健康',
+  '夜间低温，建议把设备贴身保温',
+  'A 节点移动到谷地，信号暂时丢失',
+  '收到，全员平安，无人员伤亡',
+  '海岸线信号受湿度影响，速率下调到 500bps',
+  '已标记危险区域，后续节点自动规避',
+  '测试完毕，网络自愈正常，断开任一节点仍可通信',
+  '收到补给清单，核对无误',
+  '探路者回报：前方 3 公里有水源',
+  '加密握手成功，信道安全等级 AES-256',
+  '节点密度提升后，平均延迟降到 0.8 秒',
+  '收到，按计划明天清晨 6 点集合',
+  '雷暴导致短时报废，雨停后恢复',
+  '气象站播报：能见度 200 米，谨慎行进',
+];
+
+/* ---------- 节点群 / 离线消息 动态面板 ---------- */
+const NodeChat = () => {
+  const [messages, setMessages] = useState([
+    { id: 0, who: '系统', text: '节点群已连接，正在监听离线消息…', self: false, sys: true },
+    { id: 1, who: 'B', text: '中继已上线，欢迎入网', self: false },
+    { id: 2, who: '我', text: '已切换到 LoRa 通道 0', self: true },
+  ]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [sending, setSending] = useState(false);
+  const scrollRef = useRef(null);
+  const seqRef = useRef(3);
+  const corpusIdx = useRef(0);
+
+  // 自动滚动到底部
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, typing]);
+
+  // 模拟节点动态：定时追加一条离线消息
+  useEffect(() => {
+    let timer;
+    const tick = () => {
+      setTyping(true);
+      timer = setTimeout(() => {
+        const idx = corpusIdx.current % NODE_CORPUS.length;
+        corpusIdx.current += 1;
+        const who = NODE_NAMES[Math.floor(Math.random() * NODE_NAMES.length)];
+        const text = NODE_CORPUS[idx];
+        setMessages((m) => [...m, { id: seqRef.current++, who, text, self: false }]);
+        setTyping(false);
+        timer = setTimeout(tick, 4000 + Math.random() * 4000);
+      }, 900);
+    };
+    timer = setTimeout(tick, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // AI 节点回复：优先调 /api/ai-chat（复用 XinghuisamaBlogs 线上 Gemini 接口），
+  // 失败则降级到我方大语料库（NODE_CORPUS）。
+  const getNodeReply = async (userText) => {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 13000);
+      const res = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      if (res.ok) {
+        const data = await res.json();
+        const text = (data.reply || '').trim();
+        if (text) {
+          return { who: NODE_NAMES[Math.floor(Math.random() * NODE_NAMES.length)], text };
+        }
+      }
+    } catch {
+      /* 走降级 */
+    }
+    // 降级：随机语料
+    const idx = corpusIdx.current % NODE_CORPUS.length;
+    corpusIdx.current += 1;
+    return { who: NODE_NAMES[Math.floor(Math.random() * NODE_NAMES.length)], text: NODE_CORPUS[idx] };
   };
 
-  const features = [
-    {
-      icon: ICONS.signal,
-      title: t({ id: 'offgrid.f1.title', message: '去中心化中继' }),
-      desc: t({ id: 'offgrid.f1.desc', message: '无需基站与互联网，节点之间自动组网、自动中继，信号盲区也能互通消息。' }),
-      tags: ['Meshtastic', 'LoRa', '自组网'],
-    },
-    {
-      icon: ICONS.network,
-      title: t({ id: 'offgrid.f2.title', message: '离线消息通道' }),
-      desc: t({ id: 'offgrid.f2.desc', message: '断网环境下保持通信能力，文字、位置、传感器数据照常收发，关键时刻不掉链子。' }),
-      tags: ['加密通道', '长续航'],
-    },
-    {
-      icon: ICONS.shield,
-      title: t({ id: 'offgrid.f3.title', message: '端到端加密' }),
-      desc: t({ id: 'offgrid.f3.desc', message: '默认启用 AES-128 加密，通信内容仅限网内成员可读，隐私不依赖中心服务器。' }),
-      tags: ['AES-128', '零信任'],
-    },
-    {
-      icon: ICONS.battery,
-      title: t({ id: 'offgrid.f4.title', message: '超低功耗' }),
-      desc: t({ id: 'offgrid.f4.desc', message: '基于 LoRa 的极低发射功耗，一节电池可支撑数天到数周，适合野外与应急场景。' }),
-      tags: ['节电', '野外'],
-    },
-    {
-      icon: ICONS.node,
-      title: t({ id: 'offgrid.f5.title', message: '弹性拓扑' }),
-      desc: t({ id: 'offgrid.f5.desc', message: '任意节点可随时加入或离开，网络自愈、无需配置，规模从两人到上千节点皆宜。' }),
-      tags: ['自愈', '即插即用'],
-    },
-    {
-      icon: ICONS.radio,
-      title: t({ id: 'offgrid.f6.title', message: '硬件开放' }),
-      desc: t({ id: 'offgrid.f6.desc', message: '兼容 ESP32 / nRF 等常见开发板，固件开源，固件、协议、原理图全部可查可改。' }),
-      tags: ['开源', 'ESP32'],
-    },
-  ];
-
-  const scenarios = [
-    {
-      icon: ICONS.compass,
-      title: t({ id: 'offgrid.s1.title', message: '户外与救援' }),
-      desc: t({ id: 'offgrid.s1.desc', message: '徒步、登山、灾备现场，队员之间保持位置共享与消息互通，不依赖手机信号。' }),
-    },
-    {
-      icon: ICONS.book,
-      title: t({ id: 'offgrid.s2.title', message: '学习与实验' }),
-      desc: t({ id: 'offgrid.s2.desc', message: '从一块开发板开始，理解LoRa、Mesh网络与低功耗通信的真实运作，动手即懂。' }),
-    },
-    {
-      icon: ICONS.network,
-      title: t({ id: 'offgrid.s3.title', message: '社区与活动' }),
-      desc: t({ id: 'offgrid.s3.desc', message: '线下聚会、展会、临时营地，快速搭建一张只属于在场人员的私有通信网。' }),
-    },
-  ];
+  const handleSend = async () => {
+    const txt = input.trim();
+    if (!txt || sending) return;
+    setSending(true);
+    const myMsg = { id: seqRef.current++, who: '我', text: txt, self: true };
+    setMessages((m) => [...m, myMsg]);
+    setInput('');
+    setTyping(true);
+    setTimeout(async () => {
+      const reply = await getNodeReply(txt);
+      setMessages((m) => [...m, { id: seqRef.current++, ...reply, self: false }]);
+      setTyping(false);
+      setSending(false);
+    }, 700 + Math.random() * 600);
+  };
 
   return (
-    <Layout
-      title={t({ id: 'offgrid.meta.title', message: '离网通信 · MeshROC' })}
-      description={t({ id: 'offgrid.meta.desc', message: '基于 Meshtastic 的去中心化、离线、加密自组网通信实验场。' })}
-    >
-      <main className="off-grid">
-        <div className="off-grid__wrap">
-          <section className="off-grid__hero">
-            <span className="off-grid__badge">
-              <Icon path={ICONS.signal} size={14} />
-              {t({ id: 'offgrid.badge', message: 'OFF-GRID · 离网通信' })}
-            </span>
-            <h1 className="off-grid__title">
-              {t({ id: 'offgrid.hero.title', message: '当网络消失，通信不该消失' })}
-            </h1>
-            <p className="off-grid__subtitle">
-              {t({ id: 'offgrid.hero.subtitle', message: 'MeshROC 是一个基于 Meshtastic 的离网通信实验场：去中心化、离线可用、端到端加密。把消息交还给网络本身，而不是某一台服务器。' })}
-            </p>
-          </section>
+    <div style={{ width: '100%', maxWidth: '360px', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0.85rem', borderBottom: '1px solid hsl(var(--border))', background: 'hsl(var(--muted))' }}>
+        <IconRadio size={18} />
+        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t({ id: 'offGrid.nodeChat.title', message: '节点群 / 离线消息' })}</span>
+        <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: 'hsl(var(--btn-primary))', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'hsl(var(--btn-primary))', display: 'inline-block' }} /> {t({ id: 'offGrid.nodeChat.live', message: '实时' })}
+        </span>
+      </div>
 
-          <section className="off-grid__grid">
-            {features.map((f, i) => (
-              <article
-                key={i}
-                className={
-                  'off-grid__card' +
-                  (f.tags.length === 0 && i === features.length - 1 ? ' off-grid__card--wide' : '')
-                }
-              >
-                <div className="off-grid__card-icon">
-                  <Icon path={f.icon} />
-                </div>
-                <h3 className="off-grid__card-title">{f.title}</h3>
-                <p className="off-grid__card-desc">{f.desc}</p>
-                <div className="off-grid__card-tags">
-                  {f.tags.map((tag, j) => (
-                    <span key={j} className="off-grid__tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </section>
+      <div ref={scrollRef} style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', minHeight: '260px', maxHeight: '300px', overflowY: 'auto' }}>
+        {messages.map((m) => (
+          <div key={m.id} style={{ alignSelf: m.self ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
+            <div style={{
+              fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.15rem',
+              textAlign: m.self ? 'right' : 'left',
+            }}>{m.who}</div>
+            <div style={{
+              padding: '0.45rem 0.7rem', borderRadius: 'var(--radius)',
+              fontSize: '0.82rem', lineHeight: 1.5,
+              background: m.sys ? 'transparent' : (m.self ? 'hsl(var(--btn-primary))' : 'hsl(var(--muted))'),
+              color: m.sys ? 'hsl(var(--muted-foreground))' : (m.self ? 'hsl(var(--btn-primary-foreground))' : 'hsl(var(--foreground))'),
+              fontStyle: m.sys ? 'italic' : 'normal',
+              textAlign: m.sys ? 'center' : 'left',
+              fontSize: m.sys ? '0.78rem' : '0.82rem',
+            }}>{m.text}</div>
+          </div>
+        ))}
+        {typing && (
+          <div style={{ alignSelf: 'flex-start', maxWidth: '82%' }}>
+            <div style={{ fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.15rem' }}>节点</div>
+            <div style={{ padding: '0.5rem 0.7rem', borderRadius: 'var(--radius)', background: 'hsl(var(--muted))', display: 'inline-flex', gap: '4px' }}>
+              {[0, 1, 2].map((i) => (
+                <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'hsl(var(--muted-foreground))', animation: `og-typing 1s ${i * 0.15}s infinite` }} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
-          <section className="off-grid__grid" style={{ marginTop: '1.25rem' }}>
-            {scenarios.map((s, i) => (
-              <article key={i} className="off-grid__card">
-                <div className="off-grid__card-icon">
-                  <Icon path={s.icon} />
-                </div>
-                <h3 className="off-grid__card-title">{s.title}</h3>
-                <p className="off-grid__card-desc">{s.desc}</p>
-              </article>
-            ))}
-          </section>
+      <div style={{ display: 'flex', gap: '0.5rem', padding: '0.6rem 0.7rem', borderTop: '1px solid hsl(var(--border))', background: 'hsl(var(--surface))' }}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="输入消息，回车发送…"
+          style={{ flex: 1, padding: '0.6rem 0.9rem', borderRadius: '26px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', fontSize: '0.85rem', outline: 'none' }}
+        />
+        <button
+          onClick={handleSend}
+          disabled={sending}
+          style={{ padding: '0.55rem 1.1rem', borderRadius: '26px', background: sending ? '#94e3b9' : '#07c160', color: '#fff', border: 'none', cursor: sending ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+        >
+          {sending ? t({ id: 'offGrid.nodeChat.sending', message: '发送中' }) : t({ id: 'offGrid.nodeChat.send', message: '发送' })}
+        </button>
+      </div>
+    </div>
+  );
+};
 
-          <section className="off-grid__cta">
-            <h2 className="off-grid__cta-title">
-              {t({ id: 'offgrid.cta.title', message: '从一块开发板开始' })}
-            </h2>
-            <p className="off-grid__cta-desc">
-              {t({ id: 'offgrid.cta.desc', message: '查阅 Meshtastic 文档，选一块 ESP32 + LoRa 板子，刷上开源固件，你的第一张离网 mesh 网络就上线了。' })}
-            </p>
-            <a
-              className="off-grid__btn"
-              href="https://meshtastic.org/docs/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Icon path={ICONS.book} size={18} />
-              {t({ id: 'offgrid.cta.btn', message: '阅读 Meshtastic 文档' })}
+/* 打字指示器动画 */
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = '@keyframes og-typing { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-4px);opacity:1} }';
+  if (!document.getElementById('og-typing-style')) { style.id = 'og-typing-style'; document.head.appendChild(style); }
+}
+
+/* ---------- 主区域 ---------- */
+/* ---------- 网络地图动态背景（移植自 meshtastic 主页） ---------- */
+/* 离网节点群：节点呼吸光晕 + 节点间无线电波扩散 + 背景径向渐变 */
+const MAP_NODES = [
+  { x: 0.18, y: 0.30 }, { x: 0.32, y: 0.55 }, { x: 0.45, y: 0.22 },
+  { x: 0.58, y: 0.48 }, { x: 0.68, y: 0.32 }, { x: 0.78, y: 0.62 },
+  { x: 0.40, y: 0.72 }, { x: 0.55, y: 0.80 }, { x: 0.85, y: 0.40 },
+  { x: 0.25, y: 0.78 }, { x: 0.62, y: 0.68 }, { x: 0.50, y: 0.40 },
+];
+
+const MapBackground = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let raf;
+    let width = 0;
+    let height = 0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // 预计算节点像素位置 + 各自随机相位
+    const nodes = MAP_NODES.map((n) => ({
+      bx: n.x,
+      by: n.y,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.6 + Math.random() * 0.8,
+    }));
+
+    const start = performance.now();
+
+    const draw = (t) => {
+      const elapsed = (t - start) / 1000;
+      const dark = isDark();
+      ctx.clearRect(0, 0, width, height);
+
+      // 背景径向渐变
+      const gx = width * 0.3;
+      const gy = height * 0.3;
+      const grad = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(width, height) * 0.8);
+      if (dark) {
+        grad.addColorStop(0, 'rgba(19, 73, 47, 0.22)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      } else {
+        grad.addColorStop(0, 'rgba(27, 110, 70, 0.14)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      const px = nodes.map((n) => ({ x: n.bx * width, y: n.by * height }));
+
+      // 节点间无线电波（连线脉冲）
+      ctx.lineWidth = 1;
+      const pulse = (Math.sin(elapsed * 0.8) + 1) / 2;
+      for (let i = 0; i < px.length; i++) {
+        for (let j = i + 1; j < px.length; j++) {
+          const dx = px[i].x - px[j].x;
+          const dy = px[i].y - px[j].y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < Math.min(width, height) * 0.42) {
+            const alpha = (1 - dist / (Math.min(width, height) * 0.42)) * 0.18 * (0.5 + pulse * 0.5);
+            ctx.strokeStyle = dark
+              ? `rgba(132, 224, 168, ${alpha})`
+              : `rgba(27, 110, 70, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(px[i].x, px[i].y);
+            ctx.lineTo(px[j].x, px[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // 节点呼吸光晕
+      for (let i = 0; i < px.length; i++) {
+        const n = nodes[i];
+        const breath = (Math.sin(elapsed * n.speed + n.phase) + 1) / 2;
+        const r = 2 + breath * 2.5;
+        const halo = 10 + breath * 22;
+        const cx = px[i].x;
+        const cy = px[i].y;
+
+        const hg = ctx.createRadialGradient(cx, cy, 0, cx, cy, halo);
+        hg.addColorStop(0, dark
+          ? `rgba(132, 224, 168, ${0.35 * (0.4 + breath * 0.6)})`
+          : `rgba(27, 110, 70, ${0.35 * (0.4 + breath * 0.6)})`);
+        hg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = hg;
+        ctx.beginPath();
+        ctx.arc(cx, cy, halo, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = dark ? 'rgba(160, 240, 190, 0.95)' : 'rgba(27, 110, 70, 0.95)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />;
+};
+
+export default function OffGridPage() {
+  const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
+
+  return (
+    <Layout title="离网通信" description="MeshROC（Mesh Realm Of Connection）互联之域离线无线组网系统 —— 兼容 Meshtastic 协议的国产开源 LoRa-Mesh 硬件与固件生态">
+      <div className="off-grid-page" style={{ position: 'relative', minHeight: '100vh', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', overflow: 'hidden' }}>
+        {/* 社交侧栏（桌面） */}
+        <div className="off-grid-social">
+          {SOCIALS.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
+              <s.icon />
             </a>
+          ))}
+        </div>
+
+        <main className="container" style={{ maxWidth: '80rem', margin: '0 auto', position: 'relative', paddingTop: '3rem', paddingBottom: '4rem' }}>
+          {/* ---------- Hero ---------- */}
+          <section style={{ position: 'relative', borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid hsl(var(--border))', padding: 'clamp(2rem, 6vw, 5rem)', background: 'hsl(var(--surface))' }}>
+            <div className="off-grid-mapbg">
+              <MapBackground />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2" style={{ position: 'relative', zIndex: 1, gap: '2.5rem', alignItems: 'center' }}>
+              <div>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.8rem',
+                  borderRadius: '999px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))',
+                  fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', marginBottom: '1.25rem',
+                }}>
+                  <IconRadio size={16} /> {t({ id: 'offGrid.badge', message: '兼容 Meshtastic · 国产开源 · 470MHz' })}
+                </div>
+                <h1 className="font-mono" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', lineHeight: 1.1, margin: '0 0 0.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
+                  {t({ id: 'offGrid.heroTitleA', message: '离网也能' })}<br />{t({ id: 'offGrid.heroTitleB', message: '保持联络' })}
+                </h1>
+                <p className="font-mono" style={{ fontSize: '0.85rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(var(--btn-primary))', margin: '0 0 1rem' }}>
+                  Mesh Realm Of Connection
+                </p>
+                <p style={{ fontSize: '1.05rem', color: 'hsl(var(--muted-foreground))', lineHeight: 1.75, maxWidth: '34rem', margin: '0 0 2rem' }}>
+                  {t({ id: 'offGrid.heroDesc', message: 'MeshROC 互联之域离线无线组网系统，是一套完全开源、自研优化、兼容 Meshtastic 协议的 LoRa-Mesh 硬件与固件生态。面向山地远距离、城市复杂遮挡与应急断网场景，无需 SIM 卡，无需基站。' })}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <Link to="/hardware" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                    {t({ id: 'offGrid.viewHardware', message: '查看硬件产品' })} <IconArrowRight size={18} />
+                  </Link>
+                  <Link to="/download" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', background: 'hsl(var(--card))' }}>
+                    {t({ id: 'offGrid.downloadCenter', message: '下载中心' })} <IconDownload size={18} />
+                  </Link>
+                  <button onClick={() => setDeviceDialogOpen(true)} className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', background: 'transparent', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem' }}>
+                    {t({ id: 'offGrid.flasher', message: '设备刷写器' })} <IconSmartphone size={18} />
+                  </button>
+                </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <NodeChat />
+              </div>
+            </div>
           </section>
 
-          <p className="off-grid__note">
-            {t({ id: 'offgrid.note', message: 'MeshROC · 离网通信实验场 · 基于 Meshtastic 开源项目构建' })}
-          </p>
+          {/* ---------- 统计 ---------- */}
+          <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginTop: '2.5rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '1.5rem 0' }}>
+            <Stat value={4} suffix="" label={t({ id: 'offGrid.stat.products', message: '自研硬件产品线' })} />
+            <Stat value={8} suffix="" label={t({ id: 'offGrid.stat.features', message: '项核心技术优化' })} />
+            <Stat value={30} suffix="dBm" label={t({ id: 'offGrid.stat.power', message: '骨干发射功率' })} />
+            <Stat value={100} suffix="%" label={t({ id: 'offGrid.stat.open', message: '开源免费' })} />
+          </section>
+
+          {/* ---------- 特性 ---------- */}
+          <section style={{ marginTop: '3.5rem' }}>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.featuresTitle', message: '为什么选择 MeshROC' })}</h2>
+            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.featuresSub', message: '兼容 Meshtastic 协议，并在路由、射频、电源、驱动四个层面深度优化' })}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+              {[
+                { icon: IconRadio, title: t({ id: 'offGrid.feat.routing', message: '分层骨干路由' }), desc: t({ id: 'offGrid.feat.routingDesc', message: '骨干转发、终端静默，从机制上解决洪泛广播风暴与信道拥堵。' }) },
+                { icon: IconGlobe, title: t({ id: 'offGrid.feat.nlos', message: '山地 NLOS 优化' }), desc: t({ id: 'offGrid.feat.nlosDesc', message: '针对非视距山地地形优化链路预算与调制策略，提升可达率。' }) },
+                { icon: IconUser, title: t({ id: 'offGrid.feat.band', message: '470MHz 国内频段' }), desc: t({ id: 'offGrid.feat.bandDesc', message: '标准 470–490MHz 免费频段本地化适配，合规免许可使用。' }) },
+                { icon: IconUsers, title: t({ id: 'offGrid.feat.solar', message: '太阳能智能电源' }), desc: t({ id: 'offGrid.feat.solarDesc', message: 'CN3791 充电方案 + 智能休眠策略，解决休眠丢包与发送中断。' }) },
+                { icon: IconSmartphone, title: t({ id: 'offGrid.feat.driver', message: '自研外设驱动' }), desc: t({ id: 'offGrid.feat.driverDesc', message: '专为自研 PCB 编写，规避 USB 引脚冲突与射频干扰问题。' }) },
+                { icon: IconDownload, title: t({ id: 'offGrid.feat.open', message: '完全开源' }), desc: t({ id: 'offGrid.feat.openDesc', message: 'MIT License，硬件立创开源、星火计划入库，固件源码公开。' }) },
+              ].map((f) => (
+                <div key={f.title} style={{ borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '1.5rem' }}>
+                  <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'hsl(var(--muted))', color: 'hsl(var(--btn-primary))', marginBottom: '1rem' }}>
+                    <f.icon size={22} />
+                  </div>
+                  <h3 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem', fontWeight: 600 }}>{f.title}</h3>
+                  <p style={{ fontSize: '0.92rem', color: 'hsl(var(--muted-foreground))', margin: 0, lineHeight: 1.65 }}>{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ---------- 产品线 ---------- */}
+          <section style={{ marginTop: '3.5rem' }}>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.productsTitle', message: '硬件产品线' })}</h2>
+            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.productsSub', message: '从山顶骨干到单兵终端，四大系列覆盖完整组网需求' })}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+              {[
+                { name: 'MeshROC Backbone', cn: t({ id: 'offGrid.prod.backbone', message: '山顶太阳能骨干节点' }), spec: '30dBm · CN3791 太阳能' },
+                { name: 'MeshROC Gateway', cn: t({ id: 'offGrid.prod.gateway', message: 'POE 城市基站' }), spec: 'ESP32-S3 · W5500 · POE' },
+                { name: 'MeshROC Walk', cn: t({ id: 'offGrid.prod.walk', message: '手持终端' }), spec: 'ST7789 · 实体键盘 · AHT20' },
+                { name: 'MeshROC Sensor', cn: t({ id: 'offGrid.prod.sensor', message: '低功耗传感终端' }), spec: 'ESP32-C3 · 超低功耗' },
+              ].map((p) => (
+                <Link key={p.name} to="/hardware" style={{ display: 'block', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
+                  <h3 className="font-mono" style={{ fontSize: '1.02rem', margin: '0 0 0.3rem', fontWeight: 700 }}>{p.name}</h3>
+                  <p style={{ fontSize: '0.9rem', color: 'hsl(var(--muted-foreground))', margin: '0 0 0.75rem' }}>{p.cn}</p>
+                  <p className="font-mono" style={{ fontSize: '0.78rem', color: 'hsl(var(--btn-primary))', margin: 0 }}>{p.spec}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* ---------- 下载区 ---------- */}
+          <section id="download" style={{ marginTop: '3.5rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--surface))', padding: 'clamp(1.5rem, 4vw, 3rem)', textAlign: 'center' }}>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.downloadTitle', message: '准备搭建你的网络？' })}</h2>
+            <p style={{ color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.downloadSub', message: '获取 MeshROC 固件与硬件工程文件，按文档刷写配置，几分钟内即可组网通信。' })}</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+              <Link to="/download" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                <IconDownload size={18} /> {t({ id: 'offGrid.getFirmware', message: '获取固件' })}
+              </Link>
+              <Link to="/docs-center" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                <IconFileText size={18} /> {t({ id: 'offGrid.viewDocs', message: '文档中心' })}
+              </Link>
+              <Link to="/community" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                <IconGithub size={18} /> {t({ id: 'offGrid.joinCommunity', message: '开源社区' })}
+              </Link>
+            </div>
+          </section>
+
+          {/* ---------- 赞助商 ---------- */}
+          <section style={{ marginTop: '3.5rem', textAlign: 'center' }}>
+            <h2 className="font-mono" style={{ fontSize: '1.4rem', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.sponsorsTitle', message: '项目支持者' })}</h2>
+            <p style={{ color: 'hsl(var(--muted-foreground))', margin: '0 0 1.5rem' }}>{t({ id: 'offGrid.sponsorsSub', message: '感谢为离网通信生态贡献的社区与个人' })}</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+              {[t({ id: 'offGrid.sponsor.hw', message: '开源硬件厂商' }), t({ id: 'offGrid.sponsor.radio', message: '无线电爱好者社区' }), t({ id: 'offGrid.sponsor.rescue', message: '野外救援志愿者' }), t({ id: 'offGrid.sponsor.dev', message: '独立开发者' })].map((s) => (
+                <span key={s} style={{ padding: '0.5rem 1rem', borderRadius: '999px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', fontSize: '0.9rem' }}>
+                  {s}
+                </span>
+              ))}
+            </div>
+          </section>
+        </main>
+
+        {/* 移动端社交横条 */}
+        <div className="off-grid-social-mobile">
+          {SOCIALS.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
+              <s.icon size={22} />
+            </a>
+          ))}
         </div>
-      </main>
+
+        {/* 设备弹窗 */}
+        {deviceDialogOpen && <DeviceDialog onClose={() => setDeviceDialogOpen(false)} />}
+      </div>
     </Layout>
   );
 }

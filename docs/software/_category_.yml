@@ -1,0 +1,6 @@
+label: 软件
+collapsible: true
+position: 6
+link:
+  type: doc
+  id: software-index

@@ -1,0 +1,77 @@
+---
+title: 项目介绍
+sidebar_label: 项目介绍
+slug: /introduction
+sidebar_position: 1
+description: "认识 MeshROC：一套完全开源、兼容 Meshtastic 协议、面向中国山地与城市应急场景深度优化的 LoRa Mesh 离线组网生态。"
+---
+
+import Link from "@docusaurus/Link";
+
+**MeshROC**（**Mesh Realm Of Connection**，中文官方释义「互联之域离线无线组网系统」）是一套完全开源、自研优化的 LoRa-Mesh 离线无线组网硬件与固件生态系统。它让你使用低成本的 LoRa 无线电模块，在没有基站、没有宽带、没有任何既有通信设施的区域，建立起可用的远距离通信网络。
+
+MeshROC 向下 **100% 兼容 Meshtastic 协议**，同时针对中国的频段法规、山地地形与城市遮挡环境做了大量结构性优化。
+
+### 核心特性
+
+- 远距离通信，无需任何运营商网络或互联网
+- 去中心化组网，无需专用路由器或中心服务器
+- 节点自动转发消息，构成自愈式 Mesh 网络
+- 端到端加密的文本消息与位置共享
+- 470–490MHz 国内免费频段合规适配
+- 分层骨干路由，抑制洪泛广播风暴
+- 太阳能节点智能电源管理，支持长期无人值守部署
+- 与全球标准 Meshtastic 设备完全互通
+
+## 工作原理
+
+MeshROC 使用 LoRa 这一长距离低功耗无线电协议。LoRa 工作在免授权频段，在国内使用 470–490MHz 频段无需额外许可或操作证书，这与业余无线电（HAM）有本质区别。
+
+网络中的每台设备在收到消息后都会择机转发，从而形成 Mesh 网络。这种机制确保即使是位于网络最边缘的成员，也能通过多跳中继收到消息。
+
+MeshROC 设备可通过蓝牙、WiFi 或 USB 与手机、电脑连接，由客户端负责收发消息与配置参数。需要注意的是，每台设备同一时间只支持一个客户端连接。
+
+如果你想了解更技术性的原理细节，请参阅技术总览：
+
+<div className="indexCtasBody">
+  <Link
+    className={"button button--outline  button--lg cta--button"}
+    to={"/docs/overview"}
+  >
+    技术总览
+  </Link>
+</div>
+
+## 与 Meshtastic 的关系
+
+MeshROC **基于 Meshtastic 协议生态构建，但并非简单的二次开发**。它在保留完整协议互通性的前提下，重写了路由、电源与射频子系统，并配套了一套独立自研的国产硬件体系。
+
+一句话概括官方定位：
+
+> **MeshROC = Meshtastic-Compatible + China-Regional Optimized + Hardware-Tailored Professional Mesh System**
+
+<div className="indexCtasBody">
+  <Link
+    className={"button button--outline  button--lg cta--button"}
+    to={"/docs/compatibility"}
+  >
+    兼容性说明
+  </Link>
+</div>
+
+## 贡献者
+
+MeshROC 是一个开源项目，硬件与固件均以 MIT License 开源，硬件同时在立创开源平台入库（星火计划）。项目由志愿者利用业余时间开发与维护。如果你希望参与贡献，欢迎查阅我们的[贡献指南](/docs/contributing)。
+
+## 开始使用 MeshROC
+
+我们希望你的上手过程尽可能顺畅。如果在使用中遇到问题，欢迎完善文档以改善后来者的体验，或直接在社区中提问。
+
+<div className="indexCtasBody">
+  <Link
+    className={"button button--outline  button--lg cta--button"}
+    to={"/docs/getting-started"}
+  >
+    快速上手
+  </Link>
+</div>

@@ -6,18 +6,33 @@
 
   "branding": {
     "tagline": "离网自组网 · 去中心化通信实验场",
-    "logoAlt": "MeshROC Logo",
-    "logoSrc": "img/logo.svg",
-    "favicon": "img/logo.svg"
+    "logoAlt": "MeshROC",
+    "logoSrc": "img/logotext.webp",
+    "favicon": "img/logo.webp"
   },
 
   "navbarConfig": {
     "hideOnScroll": false,
     "items": [
       { "label": "离网通信", "to": "/", "position": "left", "className": "navbar__link--active" },
+      { "label": "关于我们", "to": "/about", "position": "left" },
+      {
+        "type": "dropdown", "label": "产品", "position": "left",
+        "items": [
+          { "label": "硬件产品", "to": "/hardware" },
+          { "label": "固件系统", "to": "/firmware" },
+          { "label": "技术特性", "to": "/features" },
+          { "label": "应用场景", "to": "/scenarios" }
+        ]
+      },
+      { "label": "下载中心", "to": "/download", "position": "left" },
       {
         "type": "dropdown", "label": "资源", "position": "left",
         "items": [
+          { "label": "文档", "to": "/docs/introduction" },
+          { "label": "文档中心", "to": "/docs-center" },
+          { "label": "开源社区", "to": "/community" },
+          { "label": "联系我们", "to": "/contact" },
           { "label": "Meshtastic 文档", "href": "https://meshtastic.org/docs/" },
           { "label": "GitHub", "href": "https://github.com/ye2f4" }
         ]
@@ -32,17 +47,37 @@
         "title": "导航",
         "items": [
           { "label": "离网通信", "to": "/" },
-          { "label": "Meshtastic", "href": "https://meshtastic.org/" }
+          { "label": "关于我们", "to": "/about" },
+          { "label": "应用场景", "to": "/scenarios" }
+        ]
+      },
+      {
+        "title": "产品",
+        "items": [
+          { "label": "硬件产品", "to": "/hardware" },
+          { "label": "固件系统", "to": "/firmware" },
+          { "label": "技术特性", "to": "/features" },
+          { "label": "下载中心", "to": "/download" }
+        ]
+      },
+      {
+        "title": "资源",
+        "items": [
+          { "label": "文档", "to": "/docs/introduction" },
+          { "label": "文档中心", "to": "/docs-center" },
+          { "label": "开源社区", "to": "/community" },
+          { "label": "联系我们", "to": "/contact" }
         ]
       },
       {
         "title": "关于",
         "items": [
           { "label": "GitHub", "href": "https://github.com/ye2f4" },
+          { "label": "Meshtastic", "href": "https://meshtastic.org/" },
           { "label": "Vercel", "href": "https://vercel.com" }
         ]
       }
     ],
-    "beian": { "href": "https://icp.gov.moe/?keyword=20265033", "label": "萌ICP备20265033号" }
+    "beian": { "href": "https://icp.gov.moe/?keyword=20262525", "label": "萌ICP备20262525号" }
   }
 }

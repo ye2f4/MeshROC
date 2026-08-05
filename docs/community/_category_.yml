@@ -1,0 +1,6 @@
+position: 8
+label: 社区
+collapsible: true
+link:
+  type: doc
+  id: community-index

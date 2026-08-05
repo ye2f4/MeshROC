@@ -72,19 +72,19 @@
 
 .navbar__logo {
   height: 2.75rem;
-  width: 2.75rem;
+  width: auto;
   margin-inline-end: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   flex-shrink: 0;
 }
 
 .navbar__logo img,
 .navbar__logo__img {
   height: 100%;
-  width: 100%;
+  width: auto;
+  max-width: 14rem;
   object-fit: contain;
   display: block;
 }
@@ -328,6 +328,12 @@ a+.navbar__link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* 侧边栏品牌区里的 logo（logotext.webp 宽图文）在窄屏收敛，避免溢出 */
+.navbar-sidebar__brand .navbar__logo img,
+.navbar-sidebar__brand .navbar__logo__img {
+  max-width: 11rem;
 }
 
 /* 关闭按钮优化 */

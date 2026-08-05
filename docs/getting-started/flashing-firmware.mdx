@@ -1,0 +1,113 @@
+---
+id: flashing-firmware
+title: 烧录固件
+sidebar_label: 烧录固件
+slug: /getting-started/flashing-firmware
+sidebar_position: 3
+description: "为 MeshROC 设备烧录固件：使用 esptool 命令行工具完成 ESP32-S3 / ESP32-C3 的固件写入。"
+---
+
+本文说明如何将 MeshROC 固件烧录到设备中。开始前请确认已完成[串口驱动安装](/docs/getting-started/serial-drivers)。
+
+:::danger 上电前必读
+
+**务必先连接天线再上电。** 未接天线时发射会损坏射频芯片。
+
+:::
+
+## 获取固件
+
+前往[下载中心](/download)获取对应型号的固件包。请注意区分设备型号：
+
+- MeshROC Walk / Backbone / Gateway：ESP32-S3 固件
+- MeshROC Sensor：ESP32-C3 固件
+
+**刷错芯片架构的固件会导致设备无法启动。** 烧录前请再次确认型号。
+
+## 安装 esptool
+
+`esptool` 是乐鑫官方的烧录工具，需要 Python 环境：
+
+```bash
+pip install esptool
+```
+
+验证安装：
+
+```bash
+esptool.py version
+```
+
+## 确认串口号
+
+- **Windows**：设备管理器 →「端口（COM 和 LPT）」，记录 `COMx`
+- **macOS**：`ls /dev/cu.*`
+- **Linux**：`ls /dev/ttyUSB* /dev/ttyACM*`
+
+## 进入下载模式
+
+多数 MeshROC 板卡支持自动进入下载模式，直接烧录即可。若烧录失败提示无法连接芯片，请手动进入下载模式：
+
+1. 按住 **BOOT** 键不放；
+2. 短按一次 **RESET** 键；
+3. 松开 **BOOT** 键。
+
+此时设备已进入下载模式，可以开始烧录。
+
+## 首次烧录（全量）
+
+首次烧录或需要彻底清除旧配置时，建议先擦除整片 Flash：
+
+```bash
+esptool.py --port COM3 erase_flash
+```
+
+:::caution
+
+`erase_flash` 会清除设备上的**全部配置**，包括频道设置与加密密钥。执行前请确认已备份必要信息。
+
+:::
+
+擦除完成后写入固件：
+
+```bash
+esptool.py --port COM3 --baud 921600 write_flash 0x0 meshroc-walk-full.bin
+```
+
+请将 `COM3` 替换为你的实际串口号，`meshroc-walk-full.bin` 替换为实际固件文件名。
+
+## 后续升级（增量）
+
+已经在运行 MeshROC 固件的设备，升级时无需擦除 Flash，直接写入应用分区即可保留原有配置：
+
+```bash
+esptool.py --port COM3 --baud 921600 write_flash 0x10000 meshroc-walk-update.bin
+```
+
+:::note
+
+升级固件的写入地址与全量固件不同（`0x10000` 而非 `0x0`）。请使用固件包中标注为 update 的文件配合该地址使用。
+
+:::
+
+## 验证烧录结果
+
+烧录完成后按一次 RESET 键重启设备。正常情况下：
+
+- 带屏幕的型号（Walk）会显示启动画面与节点信息；
+- 可通过串口监视器查看启动日志，波特率 `115200`。
+
+若设备反复重启或无输出，通常是固件与芯片型号不匹配，请重新确认固件版本后全量烧录。
+
+## 常见问题
+
+**烧录进度卡住或频繁失败**
+降低波特率重试：将 `--baud 921600` 改为 `--baud 460800` 或 `115200`。
+
+**提示 "Failed to connect to ESP32"**
+手动进入下载模式（见上文），并检查数据线是否支持数据传输。
+
+**烧录成功但设备无反应**
+确认固件对应的芯片架构正确（S3 与 C3 固件不可混用）。
+
+烧录完成后，继续进行[初始配置](/docs/getting-started/initial-config)。

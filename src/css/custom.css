@@ -1,3 +1,4 @@
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -6,6 +7,7 @@
 @import "./navbar.css";
 @import "./components.css";
 @import "./off-grid.css";
+@import "./meshroc.css";
 
 /* ========== 全局主题变量 最高优先级锁定 ========== */
 :root {

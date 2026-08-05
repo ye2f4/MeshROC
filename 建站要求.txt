@@ -1,0 +1,150 @@
+
+# =====================================
+# MeshROC OFFICIAL WEBSITE BUILD DOC
+# （交给 AI Agent 直接建站的完整官方资料）
+# =====================================
+
+## 1. 项目正式官方信息
+### 项目名称
+MeshROC
+
+### 英文全称
+**Mesh Realm Of Connection**
+
+### 中文官方释义
+**互联之域离线无线组网系统**
+
+### 项目定位
+MeshROC 是一套 **完全开源、自研优化、兼容 Meshtastic 协议、面向中国山地/城市应急通信** 的 LoRa-Mesh 离线无线组网硬件与固件生态系统。
+
+### 核心一句话介绍（官网首页主标语）
+**MeshROC – Optimized Off-Grid LoRa Mesh Ecosystem, Fully Meshtastic Compatible with Chinese Regional Adaptation &amp; Mountain Backbone Optimization.**
+
+### 中文主标语
+**MeshROC｜专为山地远距离、城市复杂遮挡、应急断网场景优化的国产离线无线Mesh生态**
+
+### 项目性质
+- 开源硬件 + 开源固件
+- 向下 100% 兼容 Meshtastic 协议
+- 在 Meshtastic 基础上做 **大量结构性、路由、电源、射频、硬件适配深度优化**
+- 独立自研硬件体系、独立固件分支、独立社区生态
+
+## 2. MeshROC 与 Meshtastic 的官方关系（官网必须写清楚）
+### 官方定义
+MeshROC **基于 Meshtastic 协议生态构建，但不是简单二次开发**。
+它保留完整协议互通性，同时解决原版 Meshtastic 长期存在的缺陷，并构建**专属国产硬件体系**。
+
+### 兼容关系（官网标准话术）
+1. **完全兼容**
+所有 MeshROC 设备可与全球标准 Meshtastic 设备互相通信、互传位置、文本、传感器数据。
+2. **显著升级（核心差异化）**
+MeshROC 在原版基础上实现大量独有优化：
+- 分层骨干路由系统（解决洪泛广播风暴）
+- 山地非视距(NLOS)远距离优化
+- 太阳能节点智能电源管理
+- 国产470MHz频段本地化适配
+- 自研ESP32-S3全硬件外设驱动
+- 抗射频干扰系统（解决LoRa大功率干扰屏幕/ADC问题）
+- 低功耗休眠防丢包机制
+- 自定义报文智能解析与自动控制
+
+### 对外官方定位
+**MeshROC = Meshtastic-Compatible + China-Regional Optimized + Hardware-Tailored Professional Mesh System**
+
+## 3. MeshROC 全套官方硬件产品线（官网产品页）
+全部自研、立创开源、星火计划入库
+
+### 1）MeshROC Backbone（山顶太阳能骨干节点）
+- 大功率 30dBm LoRa 远距离中继
+- 太阳能 CN3791 自主供电
+- 山地制高点覆盖、城市远距离中继
+- 多跳路由核心枢纽
+
+### 2）MeshROC Gateway（POE 城市基站）
+- ESP32-S3 + W5500 有线网口
+- POE 供电 7×24 小时稳定运行
+- 城市楼宇固定节点、内网数据转发
+
+### 3）MeshROC Walk（手持终端｜主力产品）
+- ESP32-S3 主控
+- 实体7键键盘 + PCF8574 IO扩展
+- ST7789 高清屏幕
+- AHT20 温湿度 + 电池ADC检测
+- 户外徒步、应急通信单兵终端
+
+### 4）MeshROC Sensor（低功耗传感终端）
+- ESP32-C3 超低功耗
+- 野外环境监测、追踪、数据采集
+
+## 4. 固件核心优势（官网技术页）
+### 1. 路由系统大幅领先原版 Meshtastic
+- 分层骨干路由机制（骨干转发、终端静默）
+- 防广播风暴、防信道拥堵
+- 自适应跳数、信噪比择优路径
+
+### 2. 射频系统中国本土化优化
+- 标准 470–490MHz 国内免费频段
+- 山地 NLOS 非视距优化
+- 动态功率自动调节
+- LBT/CAD 防碰撞增强
+
+### 3. 电源系统重写
+- 解决原版休眠丢包、发送中断问题
+- 太阳能智能策略
+- 大功率发射噪声抑制、ADC 防抖滤波
+
+### 4. 全套自研外设驱动
+专为自研 PCB 适配：
+- SPI 屏幕抗干扰驱动（规避USB引脚冲突）
+- 键盘中断唤醒系统
+- GNSS 高精度定位适配
+- 温湿度、电压监测完整适配
+
+## 5. 社区介绍（Community Page）
+### MeshROC China Group
+国内首个 **基于 Meshtastic、深度优化本土化的 LoRa Mesh 开源社群**
+
+专注：
+- 北京山地远距离实测
+- 国产自研硬件迭代
+- 固件路由算法优化
+- 应急通信技术交流
+- 开源资料共建共享
+
+## 6. 官网页面结构（AI 直接按此建站）
+1. 首页 Home
+2. 关于我们 About（项目介绍、定位、差异化）
+3. 硬件产品 Hardware（4大系列）
+4. 固件系统 Firmware
+5. 技术特性 Features
+6. 文档中心 Docs
+7. 社区 Community（MeshROC China Group）
+8. 下载中心 Download（固件、PCB、3D模型）
+9. FAQ
+
+## 7. 官网视觉规范（AI 建站配色）
+主色：**深空蓝 #0F1C2D**
+辅色：**科技青 #22D1C8**
+点缀色：**信号橙 #FF8C29**
+风格：极简、硬核科技、无线电、户外、山地、未来感
+Logo：山脊 + 无线电波纹（官方图形标识）/src/img/logo.webp是单独的logo图标，圆形；/src/img/logotext.webp是在圆形logo右侧加入MeshROC字样的图标
+
+## 8. 官方一句话简介（可用于 meta、SEO、GitHub、官网底部）
+MeshROC (Mesh Realm Of Connection) is an optimized open-source LoRa mesh communication ecosystem fully compatible with Meshtastic, designed for long-range mountain communication, urban obstacle scenarios and off-grid emergency networks in China.
+
+## 9. 官方 SEO 关键词
+MeshROC
+LoRa Mesh
+Meshtastic optimized
+off-grid communication
+山地Mesh组网
+应急无线通信
+开源Mesh硬件
+ESP32-S3 Mesh节点
+
+## 10. 版权声明
+Copyright © MeshROC Open Source Community. All hardware and firmware open-sourced under MIT License.
+
+# =====================================
+# 完毕 —— AI 可以直接基于以上内容生成完整官网
+# =====================================

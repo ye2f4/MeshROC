@@ -1,0 +1,6 @@
+position: 2
+label: 快速上手
+collapsible: true
+link:
+  type: doc
+  id: getting-started

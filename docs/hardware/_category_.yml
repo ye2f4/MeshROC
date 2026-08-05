@@ -1,0 +1,6 @@
+label: 硬件
+collapsible: true
+position: 5
+link:
+  type: doc
+  id: hardware-index

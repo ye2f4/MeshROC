@@ -1,0 +1,82 @@
+---
+id: software-index
+title: 客户端软件
+sidebar_label: 客户端软件
+slug: /software
+sidebar_position: 1
+description: "MeshROC 客户端软件总览：手机 App、桌面客户端与命令行工具的连接方式与适用场景。"
+---
+
+MeshROC 设备本身负责无线电通信，而消息的显示、输入与参数配置通常由客户端软件完成。
+
+由于 MeshROC 兼容 Meshtastic 协议，**现有的 Meshtastic 客户端软件均可直接用于 MeshROC 设备**。
+
+## 连接方式
+
+| 方式 | 适用场景 | 特点 |
+| --- | --- | --- |
+| 蓝牙 | 日常移动使用 | 最常用，无需线缆 |
+| WiFi | 固定节点远程管理 | 适合 Gateway / Backbone |
+| USB 串口 | 首次配置与调试 | 最稳定，不受配对问题干扰 |
+
+:::info
+
+每台设备同一时间只支持**一个客户端连接**。若连接失败，请先确认没有其他客户端已占用连接。
+
+:::
+
+## 客户端类型
+
+### 手机客户端
+
+最常用的使用方式。通过蓝牙连接设备后，即可收发消息、查看节点列表与地图、修改配置。
+
+适合日常携带与户外使用场景。
+
+### 桌面 / 网页客户端
+
+通过 USB 串口或 WiFi 连接，屏幕更大、输入更方便，适合：
+
+- 首次配置设备的完整参数
+- 批量配置多台设备
+- 查看详细的节点信息与链路质量数据
+
+### 命令行工具
+
+Meshtastic 官方提供的 Python CLI 工具可直接用于 MeshROC 设备，适合：
+
+- 脚本化批量配置
+- 自动化测试与数据采集
+- 高级调试
+
+安装方式：
+
+```bash
+pip install meshtastic
+```
+
+基础用法示例：
+
+```bash
+# 查看设备信息
+meshtastic --port COM3 --info
+
+# 发送测试消息
+meshtastic --port COM3 --sendtext "测试消息"
+
+# 设置节点角色为静默终端
+meshtastic --port COM3 --set device.role CLIENT_MUTE
+```
+
+请将 `COM3` 替换为实际串口号。
+
+## 独立使用
+
+[MeshROC Walk](/docs/hardware/walk) 自带 ST7789 屏幕与实体 7 键键盘，**无需连接任何客户端即可独立收发消息**。
+
+这在应急场景中非常重要——手机可能没电、损坏或因低温关机，而自带输入输出能力的终端仍然可用。
+
+## 相关阅读
+
+- [初始配置](/docs/getting-started/initial-config)
+- [频道与加密](/docs/configuration/channels)
