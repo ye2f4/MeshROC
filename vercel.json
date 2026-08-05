@@ -1,7 +1,9 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "docusaurus",
-  "buildCommand": "pnpm build",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "installCommand": "pnpm install"
+  "env": {
+    "NPM_CONFIG_REGISTRY": "https://registry.npmmirror.com"
+  },
+  "nodeVersion": "20.x"
 }
