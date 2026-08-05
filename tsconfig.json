@@ -1,0 +1,8 @@
+{
+  "extends": "@tsconfig/docusaurus/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react"
+  },
+  "include": ["src", "docusaurus.config.js", "tailwind.config.ts"]
+}

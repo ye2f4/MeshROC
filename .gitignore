@@ -1,0 +1,18 @@
+# Dependencies
+/node_modules
+
+# Docusaurus 生成
+/.docusaurus
+/build
+/.cache
+
+# Vercel
+.vercel
+
+# Misc
+.DS_Store
+*.log
+npm-debug.log*
+.pnpm-debug.log*
+.env
+.env.local

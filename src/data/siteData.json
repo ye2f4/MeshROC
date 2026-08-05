@@ -1,0 +1,48 @@
+{
+  "siteTitle": "MeshROC",
+  "siteUrl": "https://meshroc.cc.cd",
+  "basePath": "/",
+  "organizationName": "ye2f4",
+
+  "branding": {
+    "tagline": "离网自组网 · 去中心化通信实验场",
+    "logoAlt": "MeshROC Logo",
+    "logoSrc": "img/logo.svg",
+    "favicon": "img/logo.svg"
+  },
+
+  "navbarConfig": {
+    "hideOnScroll": false,
+    "items": [
+      { "label": "离网通信", "to": "/", "position": "left", "className": "navbar__link--active" },
+      {
+        "type": "dropdown", "label": "资源", "position": "left",
+        "items": [
+          { "label": "Meshtastic 文档", "href": "https://meshtastic.org/docs/" },
+          { "label": "GitHub", "href": "https://github.com/ye2f4" }
+        ]
+      }
+    ]
+  },
+
+  "footerConfig": {
+    "style": "dark",
+    "links": [
+      {
+        "title": "导航",
+        "items": [
+          { "label": "离网通信", "to": "/" },
+          { "label": "Meshtastic", "href": "https://meshtastic.org/" }
+        ]
+      },
+      {
+        "title": "关于",
+        "items": [
+          { "label": "GitHub", "href": "https://github.com/ye2f4" },
+          { "label": "Vercel", "href": "https://vercel.com" }
+        ]
+      }
+    ],
+    "beian": { "href": "https://icp.gov.moe/?keyword=20265033", "label": "萌ICP备20265033号" }
+  }
+}

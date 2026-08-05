@@ -1,0 +1,64 @@
+@tailwind base;
+
+html {
+  scrollbar-gutter: stable;
+  color-scheme: light dark;
+}
+
+:root {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(root) {
+  animation-duration: 0.2s;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root) {
+    animation: none;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  button {
+    border: 0 solid;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  .hideLight {
+    @apply hidden;
+  }
+
+  .hideDark {
+    @apply block;
+  }
+
+  [data-theme="dark"] .hideDark {
+    @apply hidden;
+  }
+
+  [data-theme="dark"] .hideLight {
+    @apply block;
+  }
+}
+
+.footer__copyright {
+  position: relative;
+  z-index: 1;
+}

@@ -1,0 +1,20 @@
+.footer {
+  background-color: hsl(var(--footer-bg));
+  color: hsl(var(--foreground));
+}
+
+.footer__title {
+  color: hsl(var(--foreground));
+}
+
+.footer__link-item {
+  color: hsl(var(--muted-foreground));
+
+  &:hover {
+    color: hsl(var(--btn-primary));
+  }
+}
+
+.footer__copyright {
+  color: hsl(var(--foreground));
+}

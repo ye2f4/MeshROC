@@ -1,0 +1,90 @@
+@tailwind components;
+@tailwind utilities;
+
+@import "./variables.css";
+@import "./base.css";
+@import "./navbar.css";
+@import "./components.css";
+@import "./off-grid.css";
+
+/* ========== 全局主题变量 最高优先级锁定 ========== */
+:root {
+  --ifm-navbar-height: 4.5rem;
+  --ifm-color-primary: #1a8a50 !important;
+  --ifm-background-color: hsl(var(--background)) !important;
+  --ifm-card-background-color: hsl(var(--card)) !important;
+  --ifm-background-surface-color: hsl(var(--surface)) !important;
+  --ifm-toc-border-color: hsl(var(--border)) !important;
+
+  --ifm-footer-link-color: hsl(var(--muted-foreground)) !important;
+  --ifm-footer-link-hover-color: hsl(var(--btn-primary)) !important;
+  --ifm-footer-title-color: hsl(var(--foreground)) !important;
+  --ifm-footer-color: hsl(var(--foreground)) !important;
+  --ifm-footer-background-color: hsl(var(--footer-bg)) !important;
+}
+
+[data-theme='dark'] {
+  --ifm-background-color: hsl(var(--background)) !important;
+  --ifm-card-background-color: hsl(var(--card)) !important;
+  --ifm-background-surface-color: hsl(var(--surface)) !important;
+  --ifm-toc-border-color: hsl(var(--border)) !important;
+  --ifm-font-color-base: hsl(var(--foreground)) !important;
+  --ifm-footer-link-color: hsl(var(--muted-foreground)) !important;
+  --ifm-footer-link-hover-color: hsl(var(--btn-primary)) !important;
+  --ifm-footer-title-color: hsl(var(--foreground)) !important;
+  --ifm-footer-color: hsl(var(--muted-foreground)) !important;
+  --ifm-footer-background-color: hsl(var(--footer-bg)) !important;
+}
+
+/* ========== 底栏优化（柔和配色） ========== */
+.footer {
+  background-color: hsl(var(--footer-bg)) !important;
+}
+.footer__title {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 600;
+}
+.footer__link-item {
+  color: hsl(var(--muted-foreground)) !important;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+.footer__link-item:hover {
+  color: hsl(var(--btn-primary)) !important;
+}
+.footer__copyright {
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 13px;
+  padding-top: 12px;
+  border-top: 1px solid hsl(var(--border) / 0.4);
+  margin-top: 8px;
+}
+[data-theme='dark'] .footer__copyright {
+  color: hsl(var(--muted-foreground)) !important;
+  border-top-color: hsl(var(--border) / 0.4);
+}
+
+/* ========== 中间统计卡片移动端适配 ========== */
+@media (max-width: 768px) {
+  [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ========== 移动端代码块/通用适配 ========== */
+@media (max-width: 768px) {
+  pre code {
+    font-size: 12px;
+    padding: 8px;
+    white-space: pre-wrap !important;
+    word-break: break-all;
+  }
+  .navbar__title {
+    font-size: 14px;
+  }
+  .navbar__logo {
+    height: 24px !important;
+    width: 24px !important;
+    margin-inline-end: 0.25rem;
+  }
+}
