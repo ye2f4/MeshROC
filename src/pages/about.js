@@ -52,6 +52,16 @@ export default function AboutPage() {
       title="关于我们"
       description="MeshROC（Mesh Realm Of Connection）互联之域离线无线组网系统 —— 完全开源、自研优化、兼容 Meshtastic 协议的 LoRa-Mesh 生态。"
     >
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        <img
+          src="/img/logo.webp"
+          alt="MeshROC"
+          width={96}
+          height={96}
+          style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 8px 24px hsl(var(--btn-primary) / 0.3)' }}
+        />
+      </div>
+
       <MrHeader
         eyebrow="About MeshROC"
         title="互联之域离线无线组网系统"

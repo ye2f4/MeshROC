@@ -56,11 +56,11 @@ const FEATURES = [
 ];
 
 const PlannerDialog = ({ onClose }) => (
-  <div
-    className="site-planner-dialog-mask"
-    onClick={onClose}
-    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }}
-  >
+    <div
+      className="site-planner-dialog-mask"
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }}
+    >
     <div
       role="dialog"
       aria-modal="true"
