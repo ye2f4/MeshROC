@@ -79,6 +79,15 @@ const config = {
         },
       };
     },
+    // 本地全文搜索（复用 my-forum 同款 @easyops-cn/docusaurus-search-local）
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        language: ['zh', 'en'],
+        highlightSearchTermsOnTargetPage: true,
+      },
+    ],
   ],
 
   themeConfig:

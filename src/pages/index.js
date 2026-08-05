@@ -545,8 +545,8 @@ export default function OffGridPage() {
                   <Link to="/hardware" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
                     {t({ id: 'offGrid.viewHardware', message: '查看硬件产品' })} <IconArrowRight size={18} />
                   </Link>
-                  <Link to="/download" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', background: 'hsl(var(--card))' }}>
-                    {t({ id: 'offGrid.downloadCenter', message: '下载中心' })} <IconDownload size={18} />
+                  <Link to="/docs-center" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', background: 'hsl(var(--card))' }}>
+                    {t({ id: 'offGrid.downloadCenter', message: '帮助中心' })} <IconDownload size={18} />
                   </Link>
                   <button onClick={() => setDeviceDialogOpen(true)} className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', background: 'transparent', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem' }}>
                     {t({ id: 'offGrid.flasher', message: '设备刷写器' })} <IconSmartphone size={18} />
@@ -620,7 +620,7 @@ export default function OffGridPage() {
                 <IconDownload size={18} /> {t({ id: 'offGrid.getFirmware', message: '获取固件' })}
               </Link>
               <Link to="/docs-center" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
-                <IconFileText size={18} /> {t({ id: 'offGrid.viewDocs', message: '文档中心' })}
+                <IconFileText size={18} /> {t({ id: 'offGrid.viewDocs', message: '帮助中心' })}
               </Link>
               <Link to="/community" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
                 <IconGithub size={18} /> {t({ id: 'offGrid.joinCommunity', message: '开源社区' })}

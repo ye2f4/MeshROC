@@ -14,7 +14,6 @@
   "navbarConfig": {
     "hideOnScroll": false,
     "items": [
-      { "label": "离网通信", "to": "/", "position": "left", "className": "navbar__link--active" },
       { "label": "关于我们", "to": "/about", "position": "left" },
       {
         "type": "dropdown", "label": "产品", "position": "left",
@@ -25,12 +24,11 @@
           { "label": "应用场景", "to": "/scenarios" }
         ]
       },
-      { "label": "下载中心", "to": "/download", "position": "left" },
+      { "label": "文档", "to": "/docs/introduction", "position": "left" },
+      { "label": "帮助中心", "to": "/docs-center", "position": "left" },
       {
         "type": "dropdown", "label": "资源", "position": "left",
         "items": [
-          { "label": "文档", "to": "/docs/introduction" },
-          { "label": "文档中心", "to": "/docs-center" },
           { "label": "开源社区", "to": "/community" },
           { "label": "联系我们", "to": "/contact" },
           { "label": "Meshtastic 文档", "href": "https://meshtastic.org/docs/" },
@@ -46,7 +44,6 @@
       {
         "title": "导航",
         "items": [
-          { "label": "离网通信", "to": "/" },
           { "label": "关于我们", "to": "/about" },
           { "label": "应用场景", "to": "/scenarios" }
         ]
@@ -64,7 +61,7 @@
         "title": "资源",
         "items": [
           { "label": "文档", "to": "/docs/introduction" },
-          { "label": "文档中心", "to": "/docs-center" },
+          { "label": "帮助中心", "to": "/docs-center" },
           { "label": "开源社区", "to": "/community" },
           { "label": "联系我们", "to": "/contact" }
         ]

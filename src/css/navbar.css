@@ -129,10 +129,11 @@ a+.navbar__link {
   }
 }
 
+/* 桌面端默认隐藏汉堡菜单，仅在移动端响应式布局触发时显示 */
 .navbar__toggle {
   margin-inline-end: 0.5rem;
   color: hsl(var(--muted-foreground));
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   min-inline-size: 2.25rem;
@@ -149,9 +150,10 @@ a+.navbar__link {
   block-size: 1.5rem;
 }
 
-/* 移动端：三道杠进一步收紧 */
+/* 移动端：三道杠显示并进一步收紧 */
 @media (width < 997px) {
   .navbar__toggle {
+    display: flex;
     margin-inline-end: 0.25rem;
     min-inline-size: 2rem;
     min-block-size: 2rem;
@@ -201,7 +203,8 @@ a+.navbar__link {
   }
 
   .navbar__items--right [class*="searchBox"],
-  .navbar__items--right [class*="SearchBar"] {
+  .navbar__items--right [class*="SearchBar"],
+  .navbar__items--right .navbar__search {
     display: flex !important;
   }
 }

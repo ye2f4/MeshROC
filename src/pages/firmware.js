@@ -155,10 +155,10 @@ export default function FirmwarePage() {
 
       <MrCTA
         title="下载固件开始使用"
-        desc="获取预编译固件与刷写工具，或查阅文档中心的完整配置说明。"
+        desc="获取预编译固件与刷写工具，或查阅帮助中心的完整配置说明。"
         actions={[
           { label: '下载固件', to: '/download' },
-          { label: '文档中心', to: '/docs-center', variant: 'mr-btn--ghost' },
+          { label: '帮助中心', to: '/docs-center', variant: 'mr-btn--ghost' },
           { label: '技术特性', to: '/features', variant: 'mr-btn--ghost' },
         ]}
       />

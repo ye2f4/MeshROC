@@ -115,7 +115,7 @@ export default function ContactPage() {
         desc="先到下载中心把固件刷起来，遇到问题随时回到这里找我们。"
         actions={[
           { label: '下载中心', to: '/download' },
-          { label: '文档中心', to: '/docs-center', variant: 'mr-btn--ghost' },
+          { label: '帮助中心', to: '/docs-center', variant: 'mr-btn--ghost' },
           { label: '开源社区', to: '/community', variant: 'mr-btn--ghost' },
         ]}
       />

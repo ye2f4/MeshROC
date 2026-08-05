@@ -193,9 +193,9 @@ export default function DownloadPage() {
 
       <MrCTA
         title="遇到问题？"
-        desc="查阅文档中心的详细说明，或到社区提问，也欢迎直接在 GitHub 提 Issue。"
+        desc="查阅帮助中心的详细说明，或到社区提问，也欢迎直接在 GitHub 提 Issue。"
         actions={[
-          { label: '文档中心', to: '/docs-center' },
+          { label: '帮助中心', to: '/docs-center' },
           { label: 'GitHub', href: GITHUB, variant: 'mr-btn--ghost' },
           { label: '联系我们', to: '/contact', variant: 'mr-btn--ghost' },
         ]}

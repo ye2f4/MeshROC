@@ -48,12 +48,12 @@ const FAQS = [
 export default function DocsCenterPage() {
   return (
     <MrPage
-      title="文档中心"
-      description="MeshROC 文档中心：快速上手、组网指南、固件刷写教程、常见问题 FAQ。"
+      title="帮助中心"
+      description="MeshROC 帮助中心：快速上手、组网指南、固件刷写教程、常见问题 FAQ。"
     >
       <MrHeader
         eyebrow="Documentation"
-        title="文档中心"
+        title="帮助中心"
         lead="从零开始把设备刷起来、把网组起来，以及你可能会遇到的常见问题。"
       />
 
