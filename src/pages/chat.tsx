@@ -4,16 +4,18 @@ import { supabase } from '@/supabase/supabaseClient';
 import { safeGetUser } from '@/lib/supabase/safe';
 
 // 默认群聊配置：主群 + LongFast 频道
+// 注意：groups.id 在数据库中是 uuid 类型，群 id 必须用 uuid 字符串（不能用 'meshroc-main-group' 这类文本）
+const MAIN_GROUP_ID = 'b1111111-1111-1111-1111-111111111101';
 const DEFAULT_GROUPS = [
   {
-    id: 'meshroc-main-group',
+    id: MAIN_GROUP_ID,
     group_name: '主交流群',
     avatar_url: '🌐',
     description: 'MeshROC 社区置顶主交流群 · 讨论组网/固件/节点部署',
     is_top: true,
   },
   {
-    id: 'meshroc-longfast-channel',
+    id: 'b1111111-1111-1111-1111-111111111102',
     group_name: 'LongFast 频道',
     avatar_url: '📡',
     description: 'LongFast 调制参数专用频道，山地远距离通信技术交流',
@@ -50,7 +52,7 @@ export default function ChatPage() {
             id: group.id,
             group_name: group.group_name,
             avatar_url: group.avatar_url,
-            owner_id: 'system',
+            owner_id: 'a8888888-8888-8888-8888-888888888888',
             is_top: group.is_top ?? false,
           }]);
         }
@@ -342,7 +344,7 @@ export default function ChatPage() {
 
           {/* 消息列表 */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
-            {currentGroup?.id === 'meshroc-main-group' && (
+            {currentGroup?.id === MAIN_GROUP_ID && (
               <div style={{ alignSelf: 'center', maxWidth: '92%', textAlign: 'center', fontSize: '0.78rem', lineHeight: 1.5, color: 'hsl(var(--muted-foreground))', background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: '0.6rem 0.9rem', marginBottom: 12 }}>
                 📌 <strong style={{ color: 'hsl(var(--foreground))' }}>主交流群</strong> · 置顶：欢迎讨论 Meshtastic 离线组网、固件刷写、节点部署与实战经验。
               </div>
