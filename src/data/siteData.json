@@ -36,7 +36,8 @@
         "items": [
           { "label": "开源社区", "to": "/community" },
           { "label": "联系我们", "to": "/contact" },
-          { "label": "站点规划器", "href": "/planner/index.html", "target": "_blank" },
+          { "label": "站点规划器", "to": "/site-planner" },
+          { "label": "固件刷写器", "to": "/flasher" },
           { "label": "Meshtastic 文档", "href": "https://meshtastic.org/docs/" },
           { "label": "GitHub", "href": "https://github.com/ye2f4/MeshROC" }
         ]

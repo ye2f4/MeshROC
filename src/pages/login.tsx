@@ -1,171 +1,107 @@
-import React, { useState } from 'react';
-import Layout from '@theme/Layout';
-import Link from '@docusaurus/Link';
-import { supabase } from '@/supabase/supabaseClient';
+import { useState } from 'react';
+import { Link } from '@docusaurus/Link';
+import { useHistory } from '@docusaurus/router';
+import { translate } from '@docusaurus/Translate';
+import { supabase } from '@/lib/supabase/client';
+import { SUPABASE_URL } from '@/lib/supabase/config';
+
+const t = (...args) => {
+  const [opts, values] = args;
+  if (typeof opts === 'string') return translate({ id: opts }, values);
+  const vals = values ?? opts?.values ?? (opts?.count !== undefined ? { count: opts.count } : undefined);
+  return translate(opts, vals);
+};
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const history = useHistory();
+  const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const login = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    const { email, password } = form;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('请输入有效的邮箱地址'); return; }
     setLoading(true);
     setError('');
-    setSuccess('');
-
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-
-      if (error) throw error;
-
-      setSuccess('登录成功，正在跳转...');
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
-    } catch (err: any) {
-      setError(err.message || '登录失败，请检查邮箱和密码');
+      const { error: signErr } = await supabase.auth.signInWithPassword({ email, password });
+      if (signErr) throw signErr;
+      history.replace('/profile');
+    } catch (err) {
+      setError(err.message || t({ id: 'login.fail', message: '登录失败，请检查邮箱或密码' }));
     } finally {
       setLoading(false);
     }
   };
 
+  const oauth = async (provider) => {
+    setLoading(true);
+    setError('');
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${SUPABASE_URL}/auth/v1/callback` } });
+    if (error) { setError(error.message); setLoading(false); }
+  };
+
+  const bilibiliOAuth = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'bilibili',
+          options: { redirectTo: `${window.location.origin}/profile` },
+        });
+        if (error) throw error;
+        return;
+      }
+      const { data, error: fnErr } = await supabase.functions.invoke('bilibili-oauth', { body: { action: 'login' } });
+      if (fnErr) throw fnErr;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        history.replace('/profile');
+      }
+    } catch (err) {
+      setError(err.message || '哔哩哔哩登录失败');
+      setLoading(false);
+    }
+  };
+
   return (
-    <Layout title="登录" description="登录 MeshROC 社区">
-      <div style={{
-        maxWidth: 420,
-        margin: '60px auto',
-        padding: '40px 32px',
-        background: 'hsl(var(--card))',
-        borderRadius: 16,
-        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>📡</div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: 'hsl(var(--foreground))' }}>
-            欢迎回来
-          </h1>
-          <p style={{ color: 'hsl(var(--muted-foreground))', marginTop: 8, fontSize: 14 }}>
-            登录 MeshROC 社区，参与在线讨论
+    <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
+        <aside style={{ display: 'none' }} className="login-aside">
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>Monoの小窝</h1>
+          <p style={{ color: 'var(--ifm-color-emphasis-600)', lineHeight: 1.8 }}>
+            欢迎回来。登录后即可参与社区讨论、管理你的节点与固件。
           </p>
-        </div>
-
-        {error && (
-          <div style={{
-            padding: '10px 14px',
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            borderRadius: 8,
-            color: '#ef4444',
-            fontSize: 13,
-            marginBottom: 16,
-          }}>
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div style={{
-            padding: '10px 14px',
-            background: 'rgba(34, 197, 94, 0.1)',
-            border: '1px solid rgba(34, 197, 94, 0.2)',
-            borderRadius: 8,
-            color: '#22c55e',
-            fontSize: 13,
-            marginBottom: 16,
-          }}>
-            {success}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: 14, fontWeight: 500, color: 'hsl(var(--foreground))' }}>
-              邮箱
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="请输入邮箱地址"
-              required
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 10,
-                fontSize: 14,
-                outline: 'none',
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: 14, fontWeight: 500, color: 'hsl(var(--foreground))' }}>
-              密码
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="请输入密码"
-              required
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 10,
-                fontSize: 14,
-                outline: 'none',
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '12px',
-              background: 'hsl(var(--btn-primary))',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 10,
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1,
-              transition: 'opacity 0.2s',
-            }}
-          >
-            {loading ? '登录中...' : '登录'}
-          </button>
-        </form>
-
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'hsl(var(--muted-foreground))' }}>
-          还没有账号？
-          <Link to="/register" style={{ color: 'hsl(var(--btn-primary))', textDecoration: 'none', fontWeight: 500, marginLeft: 4 }}>
-            立即注册
-          </Link>
-        </div>
-
-        <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid hsl(var(--border))' }}>
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: 0 }}>
-            登录即表示同意社区服务条款和隐私政策
+          <p style={{ marginTop: '1.5rem', fontSize: '.9rem', color: 'var(--ifm-color-emphasis-500)' }}>
+            还没有账号？<Link to="/register" style={{ color: 'var(--ifm-color-primary)' }}>立即注册</Link>
           </p>
-        </div>
+        </aside>
+
+        <section style={{ background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
+          <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'login.title', message: '登录 Monoの小窝' })}</h2>
+          <form onSubmit={login} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <input type="email" placeholder="邮箱" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required style={{ padding: '12px 16px', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, fontSize: 14, minHeight: 48 }} />
+            <input type="password" placeholder="密码" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} required style={{ padding: '12px 16px', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, fontSize: 14, minHeight: 48 }} />
+            {error && <div style={{ color: '#dc3545', fontSize: 13 }}>{error}</div>}
+            <button type="submit" disabled={loading} style={{ padding: 12, background: 'var(--ifm-color-primary)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, cursor: 'pointer', minHeight: 48 }}>
+              {loading ? '登录中…' : t({ id: 'login.submit', message: '登录' })}
+            </button>
+          </form>
+          <div style={{ textAlign: 'center', color: 'var(--ifm-color-emphasis-500)', fontSize: 13, margin: '14px 0' }}>或使用第三方账号</div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button type="button" onClick={() => oauth('github')} disabled={loading} style={{ flex: 1, padding: 12, border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, background: '#24292e', color: '#fff', cursor: 'pointer', fontSize: 14 }}>GitHub</button>
+            <button type="button" onClick={bilibiliOAuth} disabled={loading} style={{ flex: 1, padding: 12, border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, background: '#fb7299', color: '#fff', cursor: 'pointer', fontSize: 14 }}>哔哩哔哩</button>
+          </div>
+          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '.85rem' }}>
+            <Link to="/complete-profile" style={{ color: 'var(--ifm-color-primary)' }}>已有账号但需完善资料？</Link>
+          </p>
+        </section>
       </div>
-    </Layout>
+    </main>
   );
 }

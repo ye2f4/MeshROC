@@ -84,7 +84,7 @@ export default function AboutPage() {
       description="互联之域（Mesh Realm Of Connection）是一个开源 LoRa Mesh 社区，构建并维护 MeshROC（Mesh Radio-Optimized Communications）离线无线组网系统，兼容 Meshtastic 协议。"
     >
       <div className="mr-logo">
-        <img src="/img/logo.svg" alt="互联之域 MeshROC" />
+        <img src="/img/logo.png" alt="互联之域 MeshROC" />
       </div>
 
       <MrHeader

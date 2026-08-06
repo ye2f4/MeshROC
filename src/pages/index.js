@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { translate } from '@docusaurus/Translate';
+import { supabase } from '@/lib/supabase/client';
+import { safeGetUser } from '@/lib/supabase/safe';
 
 // Docusaurus 3.x 无 useTranslate hook，用 translate 函数式 API 包装成一致的 t()
 const t = (...args) => {
@@ -230,87 +232,91 @@ const NODE_CORPUS = [
 ];
 
 /* ---------- 节点群 / 离线消息 动态面板 ---------- */
-const NodeChat = () => {
-  const [messages, setMessages] = useState([
-    { id: 0, who: '系统', text: '节点群已连接，正在监听离线消息…', self: false, sys: true },
-    { id: 1, who: 'B', text: '中继已上线，欢迎入网', self: false },
-    { id: 2, who: '我', text: '已切换到 LoRa 通道 0', self: true },
-  ]);
+// 留言板：复用 my-forum 的评论数据（comments 表），外观保持原「节点群 / 离线消息」面板不变。
+const GUESTBOOK_ID = '/meshroc-guestbook';
+
+const MessageBoard = () => {
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [typing, setTyping] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [user, setUser] = useState(null);
+  const [needLogin, setNeedLogin] = useState(false);
   const scrollRef = useRef(null);
-  const seqRef = useRef(3);
-  const corpusIdx = useRef(0);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const { user: u } = await safeGetUser();
+        if (!active) return;
+        setUser(u);
+        const { data, error } = await supabase
+          .from('comments')
+          .select('id, user_id, content, created_at, nickname, avatar_url, is_deleted')
+          .eq('post_id', GUESTBOOK_ID)
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: true });
+        if (!active) return;
+        if (error) throw error;
+        setMessages(data || []);
+      } catch (err) {
+        console.error('留言板加载失败：', err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, []);
 
   // 自动滚动到底部
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, typing]);
-
-  // 模拟节点动态：定时追加一条离线消息
-  useEffect(() => {
-    let timer;
-    const tick = () => {
-      setTyping(true);
-      timer = setTimeout(() => {
-        const idx = corpusIdx.current % NODE_CORPUS.length;
-        corpusIdx.current += 1;
-        const who = NODE_NAMES[Math.floor(Math.random() * NODE_NAMES.length)];
-        const text = NODE_CORPUS[idx];
-        setMessages((m) => [...m, { id: seqRef.current++, who, text, self: false }]);
-        setTyping(false);
-        timer = setTimeout(tick, 4000 + Math.random() * 4000);
-      }, 900);
-    };
-    timer = setTimeout(tick, 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // AI 节点回复：优先调 /api/ai-chat（复用 XinghuisamaBlogs 线上 Gemini 接口），
-  // 失败则降级到我方大语料库（NODE_CORPUS）。
-  const getNodeReply = async (userText) => {
-    try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 13000);
-      const res = await fetch('/api/ai-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText }),
-        signal: ctrl.signal,
-      });
-      clearTimeout(timer);
-      if (res.ok) {
-        const data = await res.json();
-        const text = (data.reply || '').trim();
-        if (text) {
-          return { who: NODE_NAMES[Math.floor(Math.random() * NODE_NAMES.length)], text };
-        }
-      }
-    } catch {
-      /* 走降级 */
-    }
-    // 降级：随机语料
-    const idx = corpusIdx.current % NODE_CORPUS.length;
-    corpusIdx.current += 1;
-    return { who: NODE_NAMES[Math.floor(Math.random() * NODE_NAMES.length)], text: NODE_CORPUS[idx] };
-  };
+  }, [messages]);
 
   const handleSend = async () => {
     const txt = input.trim();
     if (!txt || sending) return;
+    if (!user) { setNeedLogin(true); return; }
     setSending(true);
-    const myMsg = { id: seqRef.current++, who: '我', text: txt, self: true };
-    setMessages((m) => [...m, myMsg]);
-    setInput('');
-    setTyping(true);
-    setTimeout(async () => {
-      const reply = await getNodeReply(txt);
-      setMessages((m) => [...m, { id: seqRef.current++, ...reply, self: false }]);
-      setTyping(false);
+    try {
+      const nickname = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || '我';
+      const avatar_url = user.user_metadata?.avatar_url || '🙂';
+      const { data, error } = await supabase
+        .from('comments')
+        .insert({ post_id: GUESTBOOK_ID, user_id: user.id, content: txt, nickname, avatar_url })
+        .select('id, user_id, content, created_at, nickname, avatar_url, is_deleted')
+        .single();
+      if (error) throw error;
+      setMessages((m) => [...m, data]);
+      setInput('');
+      setNeedLogin(false);
+    } catch (err) {
+      console.error('留言失败：', err);
+    } finally {
       setSending(false);
-    }, 700 + Math.random() * 600);
+    }
+  };
+
+  const renderMsg = (m) => {
+    const self = user && m.user_id === user.id;
+    const who = self ? '我' : (m.nickname || '网友');
+    return (
+      <div key={m.id} style={{ alignSelf: self ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
+        <div style={{
+          fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.15rem',
+          textAlign: self ? 'right' : 'left',
+        }}>{who}</div>
+        <div style={{
+          padding: '0.45rem 0.7rem', borderRadius: 'var(--radius)',
+          fontSize: '0.82rem', lineHeight: 1.5,
+          background: self ? 'hsl(var(--btn-primary))' : 'hsl(var(--muted))',
+          color: self ? 'hsl(var(--btn-primary-foreground))' : 'hsl(var(--foreground))',
+          textAlign: 'left',
+        }}>{m.content}</div>
+      </div>
+    );
   };
 
   return (
@@ -324,41 +330,28 @@ const NodeChat = () => {
       </div>
 
       <div ref={scrollRef} style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', minHeight: '260px', maxHeight: '300px', overflowY: 'auto' }}>
-        {messages.map((m) => (
-          <div key={m.id} style={{ alignSelf: m.self ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
-            <div style={{
-              fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.15rem',
-              textAlign: m.self ? 'right' : 'left',
-            }}>{m.who}</div>
-            <div style={{
-              padding: '0.45rem 0.7rem', borderRadius: 'var(--radius)',
-              fontSize: '0.82rem', lineHeight: 1.5,
-              background: m.sys ? 'transparent' : (m.self ? 'hsl(var(--btn-primary))' : 'hsl(var(--muted))'),
-              color: m.sys ? 'hsl(var(--muted-foreground))' : (m.self ? 'hsl(var(--btn-primary-foreground))' : 'hsl(var(--foreground))'),
-              fontStyle: m.sys ? 'italic' : 'normal',
-              textAlign: m.sys ? 'center' : 'left',
-              fontSize: m.sys ? '0.78rem' : '0.82rem',
-            }}>{m.text}</div>
-          </div>
-        ))}
-        {typing && (
+        {loading ? (
           <div style={{ alignSelf: 'flex-start', maxWidth: '82%' }}>
-            <div style={{ fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.15rem' }}>节点</div>
+            <div style={{ fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.15rem' }}>留言板</div>
             <div style={{ padding: '0.5rem 0.7rem', borderRadius: 'var(--radius)', background: 'hsl(var(--muted))', display: 'inline-flex', gap: '4px' }}>
               {[0, 1, 2].map((i) => (
                 <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'hsl(var(--muted-foreground))', animation: `og-typing 1s ${i * 0.15}s infinite` }} />
               ))}
             </div>
           </div>
-        )}
+        ) : messages.length === 0 ? (
+          <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', margin: 'auto' }}>
+            还没有留言，来抢沙发吧～
+          </div>
+        ) : messages.map(renderMsg)}
       </div>
 
       <div style={{ display: 'flex', gap: '0.5rem', padding: '0.6rem 0.7rem', borderTop: '1px solid hsl(var(--border))', background: 'hsl(var(--surface))' }}>
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => { setInput(e.target.value); if (needLogin) setNeedLogin(false); }}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="输入消息，回车发送…"
+          placeholder={user ? '输入消息，回车发送…' : '登录后留言…'}
           style={{ flex: 1, padding: '0.6rem 0.9rem', borderRadius: '26px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', fontSize: '0.85rem', outline: 'none' }}
         />
         <button
@@ -369,6 +362,11 @@ const NodeChat = () => {
           {sending ? t({ id: 'offGrid.nodeChat.sending', message: '发送中' }) : t({ id: 'offGrid.nodeChat.send', message: '发送' })}
         </button>
       </div>
+      {needLogin && (
+        <div style={{ padding: '0 0.7rem 0.6rem', fontSize: '0.75rem', color: 'hsl(var(--orange))' }}>
+          请先<Link to="/login" style={{ color: 'hsl(var(--btn-primary))' }}>登录</Link>后再留言。
+        </div>
+      )}
     </div>
   );
 };
@@ -506,8 +504,6 @@ const MapBackground = () => {
 };
 
 export default function OffGridPage() {
-  const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
-
   return (
     <Layout title="互联之域 · 开源 LoRa Mesh 社区" description="Mesh Realm Of Connection（互联之域）—— 国内领先的开源 LoRa Mesh 社区，基于 MeshROC（Mesh Radio-Optimized Communications）系统，兼容 Meshtastic 协议">
       <div className="off-grid-page" style={{ position: 'relative', minHeight: '100vh', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', overflow: 'hidden' }}>
@@ -557,13 +553,13 @@ export default function OffGridPage() {
                   <Link to="/docs-center" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', background: 'hsl(var(--card))' }}>
                     {t({ id: 'offGrid.downloadCenter', message: '帮助中心' })} <IconDownload size={18} />
                   </Link>
-                  <button onClick={() => setDeviceDialogOpen(true)} className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', background: 'transparent', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem' }}>
+                  <Link to="/flasher" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', background: 'transparent', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
                     {t({ id: 'offGrid.flasher', message: '设备刷写器' })} <IconSmartphone size={18} />
-                  </button>
+                  </Link>
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <NodeChat />
+                <MessageBoard />
               </div>
             </div>
           </section>
@@ -666,8 +662,6 @@ export default function OffGridPage() {
           ))}
         </div>
 
-        {/* 设备弹窗 */}
-        {deviceDialogOpen && <DeviceDialog onClose={() => setDeviceDialogOpen(false)} />}
       </div>
     </Layout>
   );
