@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from '@docusaurus/Link';
+import Layout from '@theme/Layout';
 import { useHistory } from '@docusaurus/router';
 import { translate } from '@docusaurus/Translate';
 import { supabase } from '@/lib/supabase/client';
@@ -70,6 +71,7 @@ export default function LoginPage() {
   };
 
   return (
+    <Layout title="登录 - 互联之域 MeshROC" description="登录 MeshROC 社区，连接离线 Mesh 网络">
     <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
         <aside style={{ display: 'none' }} className="login-aside">
@@ -103,5 +105,6 @@ export default function LoginPage() {
         </section>
       </div>
     </main>
+    </Layout>
   );
 }

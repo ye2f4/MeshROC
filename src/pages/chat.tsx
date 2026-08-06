@@ -7,9 +7,10 @@ import { safeGetUser } from '@/lib/supabase/safe';
 const DEFAULT_GROUPS = [
   {
     id: 'meshroc-main-group',
-    group_name: 'MeshROC 主群',
+    group_name: '主交流群',
     avatar_url: '🌐',
-    description: 'MeshROC 社区主群，欢迎所有 LoRa Mesh 爱好者交流讨论',
+    description: 'MeshROC 社区置顶主交流群 · 讨论组网/固件/节点部署',
+    is_top: true,
   },
   {
     id: 'meshroc-longfast-channel',
@@ -50,7 +51,7 @@ export default function ChatPage() {
             group_name: group.group_name,
             avatar_url: group.avatar_url,
             owner_id: 'system',
-            is_top: false,
+            is_top: group.is_top ?? false,
           }]);
         }
       } catch (err) {
@@ -234,7 +235,7 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <Layout title="在线聊天室" description="MeshROC 社区在线聊天室">
+      <Layout title="线上讨论" description="MeshROC 社区线上讨论">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
           <div style={{ color: 'hsl(var(--muted-foreground))' }}>加载中...</div>
         </div>
@@ -244,10 +245,10 @@ export default function ChatPage() {
 
   if (!currentUser) {
     return (
-      <Layout title="在线聊天室" description="MeshROC 社区在线聊天室">
+      <Layout title="线上讨论" description="MeshROC 社区线上讨论">
         <div style={{ maxWidth: 480, margin: '80px auto', padding: '40px 32px', background: 'hsl(var(--card))', borderRadius: 16, textAlign: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>💬</div>
-          <h2 style={{ fontSize: 22, marginBottom: 12, color: 'hsl(var(--foreground))' }}>欢迎来到 MeshROC 在线聊天室</h2>
+          <h2 style={{ fontSize: 22, marginBottom: 12, color: 'hsl(var(--foreground))' }}>欢迎来到 MeshROC 线上讨论</h2>
           <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: 24, fontSize: 14, lineHeight: 1.6 }}>
             登录后即可参与社区群聊，与全国各地的 LoRa Mesh 爱好者实时交流
           </p>
@@ -265,12 +266,12 @@ export default function ChatPage() {
   }
 
   return (
-    <Layout title="在线聊天室" description="MeshROC 社区在线聊天室">
+    <Layout title="线上讨论" description="MeshROC 社区线上讨论">
       <div style={{ display: 'flex', height: 'calc(100vh - var(--ifm-navbar-height))', background: 'hsl(var(--background))' }}>
         {/* 左侧群列表 */}
         <div style={{ width: 280, borderRight: '1px solid hsl(var(--border))', display: 'flex', flexDirection: 'column', background: 'hsl(var(--muted) / 0.3)' }}>
           <div style={{ padding: '16px 20px', borderBottom: '1px solid hsl(var(--border))' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600, margin: 0, color: 'hsl(var(--foreground))' }}>在线聊天室</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 600, margin: 0, color: 'hsl(var(--foreground))' }}>线上讨论</h2>
             <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: '4px 0 0' }}>MeshROC 社区群聊</p>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
@@ -341,6 +342,11 @@ export default function ChatPage() {
 
           {/* 消息列表 */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+            {currentGroup?.id === 'meshroc-main-group' && (
+              <div style={{ alignSelf: 'center', maxWidth: '92%', textAlign: 'center', fontSize: '0.78rem', lineHeight: 1.5, color: 'hsl(var(--muted-foreground))', background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: '0.6rem 0.9rem', marginBottom: 12 }}>
+                📌 <strong style={{ color: 'hsl(var(--foreground))' }}>主交流群</strong> · 置顶：欢迎讨论 Meshtastic 离线组网、固件刷写、节点部署与实战经验。
+              </div>
+            )}
             {groupMsgList.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', padding: '60px 0' }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>👋</div>

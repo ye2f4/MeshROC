@@ -231,11 +231,15 @@ const NODE_CORPUS = [
   '气象站播报：能见度 200 米，谨慎行进',
 ];
 
-/* ---------- 节点群 / 离线消息 动态面板 ---------- */
-// 留言板：复用 my-forum 的评论数据（comments 表），外观保持原「节点群 / 离线消息」面板不变。
-const GUESTBOOK_ID = '/meshroc-guestbook';
+/* ---------- 频道留言板（LongFast / MediumFast） ---------- */
+// 复用 my-forum 的评论数据（comments 表），每个频道对应一个 post_id。
+const CHANNELS = [
+  { id: '/meshroc-guestbook-longfast', name: 'LongFast' },
+  { id: '/meshroc-guestbook-mediumfast', name: 'MediumFast' },
+];
 
 const MessageBoard = () => {
+  const [channel, setChannel] = useState(CHANNELS[0]);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
@@ -254,7 +258,7 @@ const MessageBoard = () => {
         const { data, error } = await supabase
           .from('comments')
           .select('id, user_id, content, created_at, nickname, avatar_url, is_deleted')
-          .eq('post_id', GUESTBOOK_ID)
+          .eq('post_id', channel.id)
           .eq('is_deleted', false)
           .order('created_at', { ascending: true });
         if (!active) return;
@@ -267,7 +271,7 @@ const MessageBoard = () => {
       }
     })();
     return () => { active = false; };
-  }, []);
+  }, [channel.id]);
 
   // 自动滚动到底部
   useEffect(() => {
@@ -285,7 +289,7 @@ const MessageBoard = () => {
       const avatar_url = user.user_metadata?.avatar_url || '🙂';
       const { data, error } = await supabase
         .from('comments')
-        .insert({ post_id: GUESTBOOK_ID, user_id: user.id, content: txt, nickname, avatar_url })
+        .insert({ post_id: channel.id, user_id: user.id, content: txt, nickname, avatar_url })
         .select('id, user_id, content, created_at, nickname, avatar_url, is_deleted')
         .single();
       if (error) throw error;
@@ -323,7 +327,15 @@ const MessageBoard = () => {
     <div style={{ width: '100%', maxWidth: '360px', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0.85rem', borderBottom: '1px solid hsl(var(--border))', background: 'hsl(var(--muted))' }}>
         <IconRadio size={18} />
-        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t({ id: 'offGrid.nodeChat.title', message: '节点群 / 离线消息' })}</span>
+        <select
+          value={channel.id}
+          onChange={(e) => { const c = CHANNELS.find((x) => x.id === e.target.value); if (c) setChannel(c); }}
+          style={{ fontSize: '0.85rem', fontWeight: 600, border: 'none', background: 'transparent', color: 'hsl(var(--foreground))', cursor: 'pointer', outline: 'none' }}
+        >
+          {CHANNELS.map((c) => (
+            <option key={c.id} value={c.id}>{c.name} 频道</option>
+          ))}
+        </select>
         <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: 'hsl(var(--btn-primary))', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'hsl(var(--btn-primary))', display: 'inline-block' }} /> {t({ id: 'offGrid.nodeChat.live', message: '实时' })}
         </span>
@@ -341,7 +353,7 @@ const MessageBoard = () => {
           </div>
         ) : messages.length === 0 ? (
           <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', margin: 'auto' }}>
-            还没有留言，来抢沙发吧～
+            「{channel.name}」频道还挺安静，来开个头吧～
           </div>
         ) : messages.map(renderMsg)}
       </div>
@@ -351,7 +363,7 @@ const MessageBoard = () => {
           value={input}
           onChange={(e) => { setInput(e.target.value); if (needLogin) setNeedLogin(false); }}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={user ? '输入消息，回车发送…' : '登录后留言…'}
+          placeholder={user ? '输入消息，回车发送…' : '登录后发送…'}
           style={{ flex: 1, padding: '0.6rem 0.9rem', borderRadius: '26px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', fontSize: '0.85rem', outline: 'none' }}
         />
         <button
@@ -524,15 +536,13 @@ export default function OffGridPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ position: 'relative', zIndex: 1, gap: '2.5rem', alignItems: 'center' }}>
               <div>
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.8rem',
-                  borderRadius: '999px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))',
-                  fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', marginBottom: '1.25rem',
-                }}>
-                  <IconRadio size={16} /> {t({ id: 'offGrid.badge', message: '兼容 Meshtastic · 国产开源 · 470MHz' })}
-                </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.9rem', background: 'hsl(var(--btn-primary) / 0.1)', border: '1px solid hsl(var(--btn-primary) / 0.2)', borderRadius: 999, marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--btn-primary))' }}>🌐 开源社区</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.8rem', borderRadius: '999px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>
+                    <IconRadio size={16} /> {t({ id: 'offGrid.badge', message: '兼容 Meshtastic · 国产开源 · 470MHz' })}
+                  </div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.9rem', background: 'hsl(var(--btn-primary) / 0.1)', border: '1px solid hsl(var(--btn-primary) / 0.2)', borderRadius: 999 }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--btn-primary))' }}>🌐 开源社区</span>
+                  </div>
                 </div>
                 <h1 className="font-mono" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', lineHeight: 1.1, margin: '0 0 0.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
                   {t({ id: 'offGrid.heroTitleA', message: '构建你的' })}<br />{t({ id: 'offGrid.heroTitleB', message: '离线互联疆域' })}

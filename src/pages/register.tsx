@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from '@docusaurus/Link';
+import Layout from '@theme/Layout';
 import { useHistory } from '@docusaurus/router';
 import { translate } from '@docusaurus/Translate';
 import { supabase } from '@/lib/supabase/client';
@@ -98,6 +99,7 @@ export default function RegisterPage() {
   };
 
   return (
+    <Layout title="注册 - 互联之域 MeshROC" description="加入 MeshROC 社区">
     <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
         {/* 左侧：品牌 + 卖点 */}
@@ -173,5 +175,6 @@ export default function RegisterPage() {
         </section>
       </div>
     </main>
+    </Layout>
   );
 }
