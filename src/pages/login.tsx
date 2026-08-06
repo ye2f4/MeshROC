@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from '@docusaurus/Link';
+import Link from '@docusaurus/Link';
 import { useHistory } from '@docusaurus/router';
 import { translate } from '@docusaurus/Translate';
 import { supabase } from '@/lib/supabase/client';
@@ -73,7 +73,7 @@ export default function LoginPage() {
     <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
         <aside style={{ display: 'none' }} className="login-aside">
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>Monoの小窝</h1>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>互联之域 MeshROC</h1>
           <p style={{ color: 'var(--ifm-color-emphasis-600)', lineHeight: 1.8 }}>
             欢迎回来。登录后即可参与社区讨论、管理你的节点与固件。
           </p>
@@ -83,7 +83,7 @@ export default function LoginPage() {
         </aside>
 
         <section style={{ background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
-          <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'login.title', message: '登录 Monoの小窝' })}</h2>
+          <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'login.title', message: '登录 互联之域 MeshROC' })}</h2>
           <form onSubmit={login} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <input type="email" placeholder="邮箱" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required style={{ padding: '12px 16px', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, fontSize: 14, minHeight: 48 }} />
             <input type="password" placeholder="密码" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} required style={{ padding: '12px 16px', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, fontSize: 14, minHeight: 48 }} />

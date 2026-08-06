@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from '@docusaurus/Link';
+import Link from '@docusaurus/Link';
 import { useHistory } from '@docusaurus/router';
 import { translate } from '@docusaurus/Translate';
 import { supabase } from '@/lib/supabase/client';
@@ -102,7 +102,7 @@ export default function RegisterPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
         {/* 左侧：品牌 + 卖点 */}
         <aside style={{ display: 'none' }} className="register-aside">
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>Monoの小窝</h1>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>互联之域 MeshROC</h1>
           <p style={{ color: 'var(--ifm-color-emphasis-600)', lineHeight: 1.8 }}>
             注册即可加入社区：发帖、评论、管理你的节点与固件。
           </p>
@@ -119,7 +119,7 @@ export default function RegisterPage() {
 
         {/* 右侧：表单 */}
         <section style={{ background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
-          <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'register.title', message: '注册 Monoの小窝' })}</h2>
+          <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'register.title', message: '注册 互联之域 MeshROC' })}</h2>
 
           {success ? (
             <div style={{ color: '#34a853', textAlign: 'center', padding: '1rem' }}>{success}</div>
