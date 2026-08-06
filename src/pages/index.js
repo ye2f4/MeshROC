@@ -47,7 +47,7 @@ const IconExternalLink = (p) => <Svg {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 
 
 /* ---------- 社交链接 ---------- */
 const SOCIALS = [
-  { icon: IconGithub, label: 'GitHub', href: 'https://github.com/ye2f4' },
+  { icon: IconGithub, label: 'GitHub', href: 'https://github.com/ye2f4/MeshROC' },
   { icon: IconDiscord, label: 'Discord', href: '#' },
   { icon: IconMastodon, label: 'Mastodon', href: '#' },
   { icon: IconTwitter, label: 'Twitter', href: '#' },
@@ -94,9 +94,12 @@ const DEVICES = [
   { name: 'LilyGO T-Deck', desc: '带键盘的全功能掌机', price: '约 ¥380' },
 ];
 
-/* 设备刷写器：嵌入 Meshtastic 官方 Web Flasher（国内可达，支持中文，允许 iframe）。
-   原"浏览设备"静态列表已替换为真实刷写工具。 */
-const FLASHER_URL = 'https://flasher.meshtastic.org/';
+/* 设备刷写器：嵌入本地构建的 Meshtastic Web Flasher（仓库位于 E:/web-flasher，
+   构建产物放入 static/flasher/，实现方式与站点规划器 siteplanner 一致：
+   本地静态托管 + iframe 嵌入，避免依赖外网 flasher.meshtastic.org）。
+   注意：不要创建 src/pages/flasher.js，否则会与 static/flasher/ 路由撞车
+   （参考 site-planner.js 的注释）。 */
+const FLASHER_URL = '/flasher/index.html';
 
 const DeviceDialog = ({ onClose }) => {
   const [showDevices, setShowDevices] = useState(false);
@@ -506,7 +509,7 @@ export default function OffGridPage() {
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
 
   return (
-    <Layout title="离网通信" description="MeshROC（Mesh Realm Of Connection）互联之域离线无线组网系统 —— 兼容 Meshtastic 协议的国产开源 LoRa-Mesh 硬件与固件生态">
+    <Layout title="互联之域 · 开源 LoRa Mesh 社区" description="Mesh Realm Of Connection（互联之域）—— 国内领先的开源 LoRa Mesh 社区，基于 MeshROC（Mesh Radio-Optimized Communications）系统，兼容 Meshtastic 协议">
       <div className="off-grid-page" style={{ position: 'relative', minHeight: '100vh', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', overflow: 'hidden' }}>
         {/* 社交侧栏（桌面） */}
         <div className="off-grid-social">
@@ -532,14 +535,20 @@ export default function OffGridPage() {
                 }}>
                   <IconRadio size={16} /> {t({ id: 'offGrid.badge', message: '兼容 Meshtastic · 国产开源 · 470MHz' })}
                 </div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.9rem', background: 'hsl(var(--btn-primary) / 0.1)', border: '1px solid hsl(var(--btn-primary) / 0.2)', borderRadius: 999, marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--btn-primary))' }}>🌐 开源社区</span>
+                </div>
                 <h1 className="font-mono" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', lineHeight: 1.1, margin: '0 0 0.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
-                  {t({ id: 'offGrid.heroTitleA', message: '离网也能' })}<br />{t({ id: 'offGrid.heroTitleB', message: '保持联络' })}
+                  {t({ id: 'offGrid.heroTitleA', message: '构建你的' })}<br />{t({ id: 'offGrid.heroTitleB', message: '离线互联疆域' })}
                 </h1>
-                <p className="font-mono" style={{ fontSize: '0.85rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(var(--btn-primary))', margin: '0 0 1rem' }}>
-                  Mesh Realm Of Connection
+                <p className="font-mono" style={{ fontSize: '0.85rem', letterSpacing: '0.1em', color: 'hsl(var(--btn-primary))', margin: '0 0 0.75rem', fontWeight: 500 }}>
+                  Mesh Realm Of Connection · 互联之域
                 </p>
-                <p style={{ fontSize: '1.05rem', color: 'hsl(var(--muted-foreground))', lineHeight: 1.75, maxWidth: '34rem', margin: '0 0 2rem' }}>
-                  {t({ id: 'offGrid.heroDesc', message: 'MeshROC 互联之域离线无线组网系统，是一套完全开源、自研优化、兼容 Meshtastic 协议的 LoRa-Mesh 硬件与固件生态。面向山地远距离、城市复杂遮挡与应急断网场景，无需 SIM 卡，无需基站。' })}
+                <p style={{ fontSize: '0.9rem', color: 'hsl(var(--muted-foreground))', margin: '0 0 1.25rem', lineHeight: 1.6 }}>
+                  国内领先的开源 LoRa Mesh 社区，汇聚硬件开发者、户外爱好者与应急通信志愿者
+                </p>
+                <p style={{ fontSize: '1rem', color: 'hsl(var(--muted-foreground))', lineHeight: 1.75, maxWidth: '34rem', margin: '0 0 2rem', padding: '1rem 1.25rem', background: 'hsl(var(--muted) / 0.5)', borderRadius: 12, borderLeft: '3px solid hsl(var(--btn-primary))' }}>
+                  <strong style={{ color: 'hsl(var(--foreground))' }}>MeshROC 系统</strong>（Mesh Radio-Optimized Communications）是社区驱动的开源项目——完全兼容 Meshtastic 协议，在路由算法、射频优化、电源管理、硬件适配四个层面深度本土化优化。面向山地远距离、城市复杂遮挡与应急断网场景，无需 SIM 卡，无需基站。
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <Link to="/hardware" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
@@ -567,10 +576,13 @@ export default function OffGridPage() {
             <Stat value={100} suffix="%" label={t({ id: 'offGrid.stat.open', message: '开源免费' })} />
           </section>
 
-          {/* ---------- 特性 ---------- */}
+          {/* ---------- 社区特性 ---------- */}
           <section style={{ marginTop: '3.5rem' }}>
-            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.featuresTitle', message: '为什么选择 MeshROC' })}</h2>
-            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.featuresSub', message: '兼容 Meshtastic 协议，并在路由、射频、电源、驱动四个层面深度优化' })}</p>
+            <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--btn-primary))', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Community Power</span>
+            </div>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.featuresTitle', message: '社区驱动的技术生态' })}</h2>
+            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.featuresSub', message: '由开发者社区共同维护，MeshROC 系统在路由、射频、电源、驱动四个层面持续深度优化' })}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
               {[
                 { icon: IconRadio, title: t({ id: 'offGrid.feat.routing', message: '分层骨干路由' }), desc: t({ id: 'offGrid.feat.routingDesc', message: '骨干转发、终端静默，从机制上解决洪泛广播风暴与信道拥堵。' }) },
@@ -578,7 +590,7 @@ export default function OffGridPage() {
                 { icon: IconUser, title: t({ id: 'offGrid.feat.band', message: '470MHz 国内频段' }), desc: t({ id: 'offGrid.feat.bandDesc', message: '标准 470–490MHz 免费频段本地化适配，合规免许可使用。' }) },
                 { icon: IconUsers, title: t({ id: 'offGrid.feat.solar', message: '太阳能智能电源' }), desc: t({ id: 'offGrid.feat.solarDesc', message: 'CN3791 充电方案 + 智能休眠策略，解决休眠丢包与发送中断。' }) },
                 { icon: IconSmartphone, title: t({ id: 'offGrid.feat.driver', message: '自研外设驱动' }), desc: t({ id: 'offGrid.feat.driverDesc', message: '专为自研 PCB 编写，规避 USB 引脚冲突与射频干扰问题。' }) },
-                { icon: IconDownload, title: t({ id: 'offGrid.feat.open', message: '完全开源' }), desc: t({ id: 'offGrid.feat.openDesc', message: 'MIT License，硬件立创开源、星火计划入库，固件源码公开。' }) },
+                { icon: IconDownload, title: t({ id: 'offGrid.feat.open', message: '完全开源' }), desc: t({ id: 'offGrid.feat.openDesc', message: '固件遵循 GPL-3.0，硬件立创开源、星火计划入库，源码公开。' }) },
               ].map((f) => (
                 <div key={f.title} style={{ borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '1.5rem' }}>
                   <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'hsl(var(--muted))', color: 'hsl(var(--btn-primary))', marginBottom: '1rem' }}>
@@ -591,10 +603,13 @@ export default function OffGridPage() {
             </div>
           </section>
 
-          {/* ---------- 产品线 ---------- */}
+          {/* ---------- 社区开源硬件 ---------- */}
           <section style={{ marginTop: '3.5rem' }}>
-            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.productsTitle', message: '硬件产品线' })}</h2>
-            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.productsSub', message: '从山顶骨干到单兵终端，四大系列覆盖完整组网需求' })}</p>
+            <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--orange))', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Open Hardware</span>
+            </div>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.productsTitle', message: '社区开源硬件' })}</h2>
+            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.productsSub', message: '立创开源 · 星火计划入库，从山顶骨干到单兵终端，社区共同维护的四大硬件平台' })}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
               {[
                 { name: 'MeshROC Backbone', cn: t({ id: 'offGrid.prod.backbone', message: '山顶太阳能骨干节点' }), spec: '30dBm · CN3791 太阳能' },
@@ -613,8 +628,8 @@ export default function OffGridPage() {
 
           {/* ---------- 下载区 ---------- */}
           <section id="download" style={{ marginTop: '3.5rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--surface))', padding: 'clamp(1.5rem, 4vw, 3rem)', textAlign: 'center' }}>
-            <h2 className="font-mono" style={{ fontSize: '1.8rem', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.downloadTitle', message: '准备搭建你的网络？' })}</h2>
-            <p style={{ color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.downloadSub', message: '获取 MeshROC 固件与硬件工程文件，按文档刷写配置，几分钟内即可组网通信。' })}</p>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.downloadTitle', message: '加入社区，一起构建离线互联未来' })}</h2>
+            <p style={{ color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.downloadSub', message: 'MeshROC 是社区驱动的开源项目，欢迎开发者、户外爱好者、应急通信志愿者加入。在线讨论、贡献代码、分享节点，一起壮大离网通信生态。' })}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
               <Link to="/download" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
                 <IconDownload size={18} /> {t({ id: 'offGrid.getFirmware', message: '获取固件' })}

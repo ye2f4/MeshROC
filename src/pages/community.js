@@ -11,7 +11,7 @@ import {
   IconHelp,
 } from '@site/src/components/mr';
 
-const GITHUB = 'https://github.com/MeshROC';
+const GITHUB = 'https://github.com/ye2f4/MeshROC';
 
 const WAYS = [
   {
@@ -43,8 +43,8 @@ const WAYS = [
 export default function CommunityPage() {
   return (
     <MrPage
-      title="开源社区"
-      description="MeshROC 开源社区：GitHub 仓库、立创开源、贡献指南与开源协议说明。"
+      title="社区 · 互联之域"
+      description="Mesh Realm Of Connection（互联之域）—— 开源 LoRa Mesh 社区，基于 MeshROC 系统：GitHub 仓库、立创开源、贡献指南与开源协议说明。"
     >
       <MrHeader
         eyebrow="Community"
@@ -69,7 +69,7 @@ export default function CommunityPage() {
               固件源码、官网源码与 Issue 讨论区。欢迎 Star、Fork 与提交 PR。
             </p>
             <div className="mr-tags">
-              <span className="mr-tag mr-tag--cyan">MIT License</span>
+              <span className="mr-tag mr-tag--cyan">GPL-3.0 · MIT</span>
               <span className="mr-tag mr-tag--cyan">开放 PR</span>
             </div>
           </a>
@@ -149,19 +149,24 @@ export default function CommunityPage() {
       </MrSection>
 
       <MrSection eyebrow="License" eyebrowOrange title="开源协议">
-        <div className="mr-card">
-          <h3 className="mr-h3">MIT License</h3>
-          <p className="mr-p">
-            MeshROC 的硬件设计、固件源码与文档均采用 MIT License 开源。你可以自由地使用、复制、修改、合并、发布、分发本项目，包括用于商业用途。
-          </p>
-          <p className="mr-p">
-            唯一的要求是在软件的所有副本或主要部分中保留版权声明与许可声明。项目按「原样」提供，不附带任何形式的担保。
-          </p>
-          <div className="mr-tags">
-            <span className="mr-tag mr-tag--cyan">允许商用</span>
-            <span className="mr-tag mr-tag--cyan">允许修改</span>
-            <span className="mr-tag mr-tag--cyan">允许分发</span>
-            <span className="mr-tag mr-tag--cyan">允许私用</span>
+        <div className="mr-grid mr-grid--3">
+          <div className="mr-card">
+            <h3 className="mr-h3">固件 · GPL-3.0</h3>
+            <p className="mr-card__desc">
+              MeshROC 固件构建于 Meshtastic 之上，遵循 GPL-3.0 协议，与上游保持完全互通。修改后分发同样须以 GPL-3.0 开源。
+            </p>
+          </div>
+          <div className="mr-card">
+            <h3 className="mr-h3">硬件 · 开源硬件</h3>
+            <p className="mr-card__desc">
+              自研 PCB 设计以开源硬件协议在立创开源平台发布，入库星火计划，任何人可克隆工程自行打样。
+            </p>
+          </div>
+          <div className="mr-card">
+            <h3 className="mr-h3">文档 / 官网 · MIT</h3>
+            <p className="mr-card__desc">
+              本站文档与官网源码以 MIT 协议开源，欢迎引用、转载与二次创作，请保留出处。
+            </p>
           </div>
         </div>
       </MrSection>

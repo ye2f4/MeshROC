@@ -11,7 +11,7 @@ import {
   IconCode,
 } from '@site/src/components/mr';
 
-const GITHUB = 'https://github.com/MeshROC';
+const GITHUB = 'https://github.com/ye2f4/MeshROC';
 
 export default function ContactPage() {
   return (

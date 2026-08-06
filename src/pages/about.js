@@ -5,214 +5,207 @@ import {
   MrSection,
   MrCard,
   MrCTA,
-  IconMountain,
+  IconUsers,
   IconRadio,
-  IconShield,
-  IconRoute,
+  IconMountain,
   IconCpu,
-  IconZap,
+  IconRoute,
+  IconShield,
+  IconFileText,
+  IconNetwork,
 } from '@site/src/components/mr';
 
-const DIFFS = [
+const MEANINGS = [
   {
-    icon: IconRoute,
-    title: '分层骨干路由系统',
-    desc: '骨干节点转发、终端节点静默，从机制上解决原版洪泛广播风暴与信道拥堵问题。',
-  },
-  {
-    icon: IconMountain,
-    title: '山地 NLOS 远距离优化',
-    desc: '针对非视距山地地形做链路预算与调制策略优化，显著提升复杂地形下的可达率。',
-  },
-  {
-    icon: IconZap,
-    title: '太阳能智能电源管理',
-    desc: 'CN3791 太阳能充电 + 自研休眠策略，解决原版休眠丢包、发送中断等长期缺陷。',
+    icon: IconUsers,
+    title: '互联之域 · Mesh Realm Of Connection',
+    sub: '社区 / 网站名称',
+    desc: '这是「我们」——一群由硬件开发者、户外爱好者与应急通信志愿者组成的开源社区。我们共建知识、共享节点、一起把离线通信网络织得更大。',
+    tags: ['社区', '网站名', '一群人'],
   },
   {
     icon: IconRadio,
-    title: '国产 470MHz 频段适配',
-    desc: '标准 470–490MHz 国内免费频段本地化适配，合规且免许可使用。',
+    orange: true,
+    title: 'MeshROC · Mesh Radio-Optimized Communications',
+    sub: '系统名称',
+    desc: '这是社区构建并维护的开源系统——一套兼容 Meshtastic 协议的离线无线 Mesh 组网硬件与固件。它是「我们做出的东西」，而不是社区本身。',
+    tags: ['系统', '硬件 + 固件', '技术产物'],
+  },
+];
+
+const WHO = [
+  {
+    icon: IconMountain,
+    title: '山地实测',
+    desc: '北京山地远距离链路实测，积累真实地形下的覆盖与可达数据。',
   },
   {
     icon: IconCpu,
-    title: '自研 ESP32-S3 外设驱动',
-    desc: '全套外设驱动专为自研 PCB 适配，规避 USB 引脚冲突等硬件级问题。',
+    title: '自研硬件迭代',
+    desc: '在立创开源平台持续迭代自研 PCB，入库星火计划，开放给所有人打样。',
+  },
+  {
+    icon: IconRoute,
+    title: '固件路由优化',
+    desc: '社区共同打磨分层骨干路由、电源与射频策略，解决真实环境的痛点。',
   },
   {
     icon: IconShield,
-    title: '抗射频干扰系统',
-    desc: '解决 LoRa 大功率发射干扰屏幕与 ADC 采样的问题，保障强发射下的系统稳定。',
+    title: '应急通信交流',
+    desc: '面向断网、灾备与户外场景，分享部署经验与应急通信方案。',
   },
+  {
+    icon: IconFileText,
+    title: '开源资料共建',
+    desc: '文档、教程、案例由社区成员共同撰写与维护，新手也能快速上手。',
+  },
+  {
+    icon: IconNetwork,
+    title: '节点互助',
+    desc: '成员之间共享节点、互换配件、协同排查，一个人跑不通的链路大家一起跑。',
+  },
+];
+
+const DIFFS = [
+  { dim: '路由机制', meshroc: '分层骨干路由，骨干节点负责转发', others: '洪泛广播，全员转发' },
+  { dim: '信道拥堵', meshroc: '从机制上抑制广播风暴', others: '高密度下易爆信道拥堵' },
+  { dim: '射频频段', meshroc: '470–490MHz 国内免费频段', others: '868/915MHz 国内未开放' },
+  { dim: '山地覆盖', meshroc: 'NLOS 链路预算专项优化', others: '通用地形，无本土优化' },
+  { dim: '休眠丢包', meshroc: '电源系统重写，休眠不漏收', others: '已知休眠丢包与发送中断' },
+  { dim: '外设驱动', meshroc: '全套自研 PCB 专属驱动', others: '通用开发板移植' },
+  { dim: '太阳能', meshroc: '30dBm 太阳能骨干节点', others: '无对应工业级方案' },
+  { dim: '本地化', meshroc: '中文文档 + 国内频段合规', others: '以海外社区为主' },
 ];
 
 export default function AboutPage() {
   return (
     <MrPage
       title="关于我们"
-      description="MeshROC（Mesh Realm Of Connection）互联之域离线无线组网系统 —— 完全开源、自研优化、兼容 Meshtastic 协议的 LoRa-Mesh 生态。"
+      description="互联之域（Mesh Realm Of Connection）是一个开源 LoRa Mesh 社区，构建并维护 MeshROC（Mesh Radio-Optimized Communications）离线无线组网系统，兼容 Meshtastic 协议。"
     >
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-        <img
-          src="/img/logo.webp"
-          alt="MeshROC"
-          width={96}
-          height={96}
-          style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 8px 24px hsl(var(--btn-primary) / 0.3)' }}
-        />
+      <div className="mr-logo">
+        <img src="/img/logo.svg" alt="互联之域 MeshROC" />
       </div>
 
       <MrHeader
-        eyebrow="About MeshROC"
-        title="互联之域离线无线组网系统"
-        lead="MeshROC 是一套完全开源、自研优化、兼容 Meshtastic 协议，面向中国山地 / 城市应急通信的 LoRa-Mesh 离线无线组网硬件与固件生态系统。"
+        eyebrow="About 互联之域"
+        title="互联之域 · 开源 LoRa Mesh 社区"
+        lead="互联之域（Mesh Realm Of Connection）是由硬件开发者、户外爱好者与应急通信志愿者共同运营的开源社区。我们构建并维护 MeshROC 系统（Mesh Radio-Optimized Communications）——一套兼容 Meshtastic 协议的离线无线 Mesh 组网系统。"
       />
 
-      <MrSection eyebrow="项目定位" title="我们在做什么">
+      <MrSection
+        eyebrow="先说清楚"
+        title="MeshROC 的两层含义"
+        lead="社区和系统不是同一件事，请不要把两者混为一谈："
+      >
         <div className="mr-grid mr-grid--2">
-          <div className="mr-card">
-            <h3 className="mr-h3">项目性质</h3>
-            <ul className="mr-card__list">
-              <li>开源硬件 + 开源固件，MIT License</li>
-              <li>向下 100% 兼容 Meshtastic 协议</li>
-              <li>在 Meshtastic 基础上做结构性、路由、电源、射频与硬件适配的深度优化</li>
-              <li>独立自研硬件体系、独立固件分支、独立社区生态</li>
-            </ul>
-          </div>
-          <div className="mr-card">
-            <h3 className="mr-h3">官方释义</h3>
-            <p className="mr-p">
-              <strong>MeshROC</strong> = <strong>Mesh Realm Of Connection</strong>
-              ，中文官方释义为「互联之域离线无线组网系统」。
-            </p>
-            <p className="mr-p">
-              项目专为山地远距离、城市复杂遮挡、应急断网三类真实场景而生，强调在没有任何基础设施的条件下依然保持可靠通信。
-            </p>
-            <div className="mr-tags">
-              <span className="mr-tag mr-tag--cyan">开源硬件</span>
-              <span className="mr-tag mr-tag--cyan">开源固件</span>
-              <span className="mr-tag mr-tag--orange">MIT License</span>
-            </div>
-          </div>
+          {MEANINGS.map((m) => (
+            <MrCard
+              key={m.title}
+              icon={m.icon}
+              orange={m.orange}
+              title={m.title}
+              desc={`【${m.sub}】${m.desc}`}
+              tags={m.tags}
+            />
+          ))}
+        </div>
+      </MrSection>
+
+      <MrSection
+        eyebrow="我们是谁"
+        title="一群把离线网络织起来的人"
+        lead="互联之域不是某个厂牌，而是一群自愿聚在一起、用业余时间把离线通信做得更好的人。"
+      >
+        <div className="mr-grid mr-grid--3">
+          {WHO.map((w) => (
+            <MrCard key={w.title} icon={w.icon} title={w.title} desc={w.desc} />
+          ))}
         </div>
       </MrSection>
 
       <MrSection
         eyebrow="与 Meshtastic 的关系"
-        eyebrowOrange
-        title="基于 Meshtastic，但不是简单二次开发"
-        lead="MeshROC 基于 Meshtastic 协议生态构建，保留完整协议互通性，同时解决原版长期存在的缺陷，并构建专属国产硬件体系。"
+        title="我们是 Meshtastic 生态的一部分"
+        lead="MeshROC 不是另起炉灶的竞品，而是在 Meshtastic 协议之上，由中文社区补充本土化能力的兼容分支。"
       >
-        <div className="mr-grid mr-grid--2">
-          <div className="mr-card">
-            <div className="mr-card__icon">
-              <IconRadio size={22} />
-            </div>
-            <h3 className="mr-h3">完全兼容</h3>
-            <p className="mr-card__desc">
-              所有 MeshROC 设备可与全球标准 Meshtastic 设备互相通信、互传位置、文本与传感器数据，无需任何额外网关或转换。
-            </p>
-          </div>
-          <div className="mr-card">
-            <div className="mr-card__icon mr-card__icon--orange">
-              <IconZap size={22} />
-            </div>
-            <h3 className="mr-h3">显著升级</h3>
-            <p className="mr-card__desc">
-              在保持兼容的前提下，MeshROC 在路由、射频、电源、驱动四个维度实现了大量原版不具备的独有优化。
-            </p>
-          </div>
+        <div className="mr-card">
+          <p className="mr-p">
+            Meshtastic 是一个优秀的开源项目，MeshROC
+            的固件构建于其之上，并遵循同样的 GPL-3.0
+            协议，保持与全球任意标准 Meshtastic 设备的 100% 互通：文本、位置、遥测数据可互传。
+          </p>
+          <p className="mr-p">
+            社区额外做的事，是面向国内频段法规、山地地形与应急场景做本土化优化，并设计自研硬件。你可以把
+            MeshROC 节点直接加入现有 Meshtastic 网络，无需替换任何已有设备。
+          </p>
+          <p className="mr-p">
+            我们鼓励成员同时参与上游 Meshtastic 社区，把中文地区的经验回馈给整个生态。
+          </p>
         </div>
+      </MrSection>
 
-        <div className="mr-table-wrap" style={{ marginTop: '1.15rem' }}>
+      <MrSection
+        eyebrow="社区工程成果"
+        title="我们在技术上做了什么"
+        lead="下面这些是社区成员在 Meshtastic 基础上补充的差异点，属于技术说明而非商业宣传。"
+      >
+        <div className="mr-table-wrap">
           <table className="mr-table">
             <thead>
               <tr>
-                <th>能力维度</th>
-                <th>标准 Meshtastic</th>
-                <th>MeshROC</th>
+                <th>维度</th>
+                <th className="mr-table__up">互联之域 / MeshROC</th>
+                <th>原版 / 通用方案</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>协议互通</td>
-                <td>原生支持</td>
-                <td className="mr-table__yes">100% 兼容</td>
-              </tr>
-              <tr>
-                <td>路由机制</td>
-                <td>洪泛广播，易拥堵</td>
-                <td className="mr-table__up">分层骨干路由，防广播风暴</td>
-              </tr>
-              <tr>
-                <td>频段适配</td>
-                <td>通用国际频段</td>
-                <td className="mr-table__up">470–490MHz 国内免费频段本地化</td>
-              </tr>
-              <tr>
-                <td>山地 NLOS</td>
-                <td>无针对性优化</td>
-                <td className="mr-table__up">非视距远距离专项优化</td>
-              </tr>
-              <tr>
-                <td>电源管理</td>
-                <td>休眠存在丢包 / 发送中断</td>
-                <td className="mr-table__up">电源系统重写 + 太阳能智能策略</td>
-              </tr>
-              <tr>
-                <td>射频抗扰</td>
-                <td>大功率发射干扰屏幕 / ADC</td>
-                <td className="mr-table__up">抗射频干扰系统 + ADC 防抖滤波</td>
-              </tr>
-              <tr>
-                <td>硬件体系</td>
-                <td>第三方通用开发板</td>
-                <td className="mr-table__up">自研 PCB，立创开源 · 星火计划入库</td>
-              </tr>
+              {DIFFS.map((d) => (
+                <tr key={d.dim}>
+                  <td>{d.dim}</td>
+                  <td className="mr-table__up">{d.meshroc}</td>
+                  <td className="mr-table__yes">{d.others}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </MrSection>
 
-      <MrSection eyebrow="核心差异化" title="八项独有优化">
+      <MrSection
+        eyebrow="License"
+        title="开源协议说明"
+        lead="不同部分适用不同协议，请按组件区分，避免授权混乱。"
+      >
         <div className="mr-grid mr-grid--3">
-          {DIFFS.map((d) => (
-            <MrCard key={d.title} icon={d.icon} title={d.title} desc={d.desc} />
-          ))}
-          <MrCard
-            icon={IconShield}
-            orange
-            title="低功耗休眠防丢包"
-            desc="重写休眠唤醒时序，保证节点在深度省电状态下依然不漏收关键报文。"
-          />
-          <MrCard
-            icon={IconCpu}
-            orange
-            title="自定义报文智能解析"
-            desc="支持自定义报文格式的智能解析与自动控制联动，可扩展到遥测与远程执行场景。"
-          />
-        </div>
-      </MrSection>
-
-      <MrSection eyebrow="对外官方定位" center>
-        <div className="mr-card" style={{ textAlign: 'center', alignItems: 'center' }}>
-          <p
-            className="mr-h3"
-            style={{ fontSize: '1.15rem', lineHeight: 1.7, margin: 0 }}
-          >
-            MeshROC = Meshtastic-Compatible + China-Regional Optimized +
-            Hardware-Tailored Professional Mesh System
-          </p>
+          <div className="mr-card">
+            <h3 className="mr-h3">固件 · GPL-3.0</h3>
+            <p className="mr-card__desc">
+              MeshROC 固件构建于 Meshtastic 之上，遵循 GPL-3.0 协议，与上游保持完全互通。修改后分发同样须以 GPL-3.0 开源。
+            </p>
+          </div>
+          <div className="mr-card">
+            <h3 className="mr-h3">硬件 · 开源硬件</h3>
+            <p className="mr-card__desc">
+              自研 PCB 设计以开源硬件协议在立创开源平台发布，入库星火计划，任何人都可克隆工程自行打样。
+            </p>
+          </div>
+          <div className="mr-card">
+            <h3 className="mr-h3">文档 / 官网 · MIT</h3>
+            <p className="mr-card__desc">
+              本站文档与官网源码以 MIT 协议开源，欢迎引用、转载与二次创作，请保留出处。
+            </p>
+          </div>
         </div>
       </MrSection>
 
       <MrCTA
-        title="想深入了解技术细节？"
-        desc="查看硬件产品线与固件系统的完整技术说明，或直接加入社区参与共建。"
+        title="加入互联之域"
+        desc="无论你是写固件、画板子、跑山地实测，还是只想在多雨断网的周末有张能用的网——这里都欢迎你。一起把离线网络织得更大。"
         actions={[
-          { label: '查看硬件产品', to: '/hardware' },
-          { label: '固件系统', to: '/firmware', variant: 'mr-btn--ghost' },
-          { label: '加入社区', to: '/community', variant: 'mr-btn--ghost' },
+          { label: '加入社区', href: 'https://github.com/ye2f4/MeshROC', variant: 'mr-btn--primary' },
+          { label: '查看固件源码', href: 'https://github.com/ye2f4/MeshROC', variant: 'mr-btn--ghost' },
+          { label: '下载中心', to: '/download', variant: 'mr-btn--ghost' },
         ]}
       />
     </MrPage>

@@ -1,12 +1,17 @@
 {
-  "siteTitle": "MeshROC",
+  "siteTitle": "互联之域 MeshROC 社区",
   "siteUrl": "https://meshroc.cc.cd",
   "basePath": "/",
   "organizationName": "ye2f4",
 
   "branding": {
-    "tagline": "离网自组网 · 去中心化通信实验场",
-    "logoAlt": "MeshROC",
+    "tagline": "互联之域 · 开源 LoRa Mesh 社区",
+    "taglineSub": "互联之域（Mesh Realm Of Connection）是开源社区；MeshROC（Mesh Radio-Optimized Communications）是社区构建的、兼容 Meshtastic 的离线无线 Mesh 系统。两者不是一个概念。",
+    "communityName": "Mesh Realm Of Connection",
+    "communityNameCn": "互联之域",
+    "systemName": "Mesh Radio-Optimized Communications",
+    "systemNameShort": "MeshROC",
+    "logoAlt": "互联之域 MeshROC",
     "logoSrc": "img/logotext.webp",
     "favicon": "img/logo.webp"
   },
@@ -16,7 +21,7 @@
     "items": [
       { "label": "关于我们", "to": "/about", "position": "left" },
       {
-        "type": "dropdown", "label": "产品", "position": "left",
+        "type": "dropdown", "label": "系统", "position": "left",
         "items": [
           { "label": "硬件产品", "to": "/hardware" },
           { "label": "固件系统", "to": "/firmware" },
@@ -33,9 +38,11 @@
           { "label": "联系我们", "to": "/contact" },
           { "label": "站点规划器", "href": "/planner/index.html", "target": "_blank" },
           { "label": "Meshtastic 文档", "href": "https://meshtastic.org/docs/" },
-          { "label": "GitHub", "href": "https://github.com/ye2f4" }
+          { "label": "GitHub", "href": "https://github.com/ye2f4/MeshROC" }
         ]
-      }
+      },
+      { "type": "custom-ChatButton", "position": "right" },
+      { "type": "custom-UserMenu", "position": "right" }
     ]
   },
 
@@ -70,7 +77,7 @@
       {
         "title": "关于",
         "items": [
-          { "label": "GitHub", "href": "https://github.com/ye2f4" },
+          { "label": "GitHub", "href": "https://github.com/ye2f4/MeshROC" },
           { "label": "Meshtastic", "href": "https://meshtastic.org/" },
           { "label": "Vercel", "href": "https://vercel.com" }
         ]

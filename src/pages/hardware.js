@@ -177,9 +177,9 @@ export default function HardwarePage() {
             </p>
           </div>
           <div className="mr-card">
-            <h3 className="mr-h3">MIT License</h3>
+            <h3 className="mr-h3">开源硬件 · GPL-3.0 固件</h3>
             <p className="mr-card__desc">
-              所有硬件与固件均以 MIT 协议开源，允许自由使用、修改与商业化衍生。
+              硬件设计以开源硬件协议在立创开源发布、星火计划入库，可自行打样；固件构建于 Meshtastic 之上，遵循 GPL-3.0 协议。
             </p>
           </div>
         </div>

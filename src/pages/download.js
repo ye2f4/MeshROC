@@ -12,7 +12,7 @@ import {
   IconGithub,
 } from '@site/src/components/mr';
 
-const GITHUB = 'https://github.com/MeshROC';
+const GITHUB = 'https://github.com/ye2f4/MeshROC';
 
 const GROUPS = [
   {
@@ -110,7 +110,7 @@ const GROUPS = [
     items: [
       {
         name: 'MeshROC 固件源码',
-        meta: 'MIT License · 欢迎 PR 与 Issue',
+        meta: 'GPL-3.0 · 欢迎 PR 与 Issue',
         action: 'GitHub',
         href: GITHUB,
       },
@@ -155,7 +155,7 @@ export default function DownloadPage() {
       <MrHeader
         eyebrow="Download"
         title="下载中心"
-        lead="固件、硬件工程、外壳模型与文档一站获取。全部内容以 MIT 协议开源。"
+        lead="固件、硬件工程、外壳模型与文档一站获取。固件遵循 GPL-3.0，硬件与文档以开源协议发布。"
       />
 
       {GROUPS.map((g) => (
