@@ -71,18 +71,32 @@ const FEATURES = [
     solution:
       '支持自定义报文格式的智能解析，并可联动本地自动控制逻辑，扩展到遥测与远程执行场景。',
   },
+  {
+    icon: IconRadio,
+    title: '全国地貌射频模板',
+    problem: '一套固定射频参数无法同时适配山地、密林、沿海、戈壁、高原等差异巨大的国内地况。',
+    solution:
+      '内置多套地貌射频模板（高山密林 / 河谷峡谷 / 沿海高湿 / 西北戈壁 / 高原 / 城镇遮挡），常驻链路探测采集 RSSI、SNR、环境噪声底值与丢包率，按环境自动切换扩频因子、带宽、前导码长度与发射功率。',
+  },
+  {
+    icon: IconCpu,
+    title: '国产电源芯片深度适配',
+    problem: '海外方案多只读取简易电池电压，拿不到精准电量、电池温度与太阳能输入，难以做精细化能量调度。',
+    solution:
+      '完成 IP5326 充放电与 MAX17055 电量计驱动封装，节点可上报剩余电量、电池温度与太阳能板输入电压；低电量时自动降功率、减探测频次、关闭中继权限，并完整适配 ESP32‑P4 的 SDIO3.0 / eMMC / 4G 全网通以搭建 LoRa‑4G 网关。',
+  },
 ];
 
 export default function FeaturesPage() {
   return (
     <MrPage
       title="技术特性"
-      description="MeshROC 八项核心技术特性：分层骨干路由、山地 NLOS 优化、太阳能电源管理、470MHz 适配、自研驱动、抗射频干扰、防丢包休眠、自定义报文解析。"
+      description="MeshROC 十项核心技术特性：分层骨干路由、山地 NLOS 优化、太阳能电源管理、470MHz 适配、自研驱动、抗射频干扰、防丢包休眠、自定义报文解析、全国地貌射频模板、国产电源芯片适配。"
     >
       <MrHeader
         eyebrow="Technical Features"
-        title="八项核心技术特性"
-        lead="每一项优化都针对原版 Meshtastic 在真实部署中暴露的具体缺陷，而非参数层面的简单调整。"
+        title="十项核心技术特性"
+        lead="每一项优化都针对原版 Meshtastic 在国内真实部署中暴露的具体缺陷——从全国多地貌射频、国产电源芯片到应急调度语义，而非参数层面的简单调整。"
       />
 
       <MrSection>
@@ -155,6 +169,14 @@ export default function FeaturesPage() {
           <div className="mr-stat">
             <div className="mr-stat__num">AHT20</div>
             <div className="mr-stat__label">温湿度传感</div>
+          </div>
+          <div className="mr-stat">
+            <div className="mr-stat__num">IP5326</div>
+            <div className="mr-stat__label">国产充放电管理</div>
+          </div>
+          <div className="mr-stat">
+            <div className="mr-stat__num">MAX17055</div>
+            <div className="mr-stat__label">国产电量计</div>
           </div>
         </div>
       </MrSection>

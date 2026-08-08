@@ -1,4 +1,4 @@
-/* Service worker for the Meshtastic Site Planner PWA (#11).
+/* Service worker for the MeshROC 站点规划器 PWA (#11).
  *
  * Strategy (no build-time precache manifest, so it stays dependency-free):
  *  - Navigations: network-first, falling back to the cached app shell so the
@@ -12,7 +12,7 @@
  * engine, and any already-fetched terrain work offline. Bump CACHE to evict.
  */
 
-const CACHE = 'mt-app-v1';
+const CACHE = 'meshroc-planner-v1';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './favicon.ico'];
 
 self.addEventListener('install', (event) => {

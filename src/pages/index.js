@@ -4,6 +4,8 @@ import Link from '@docusaurus/Link';
 import { translate } from '@docusaurus/Translate';
 import { supabase } from '@/lib/supabase/client';
 import { safeGetUser } from '@/lib/supabase/safe';
+import { DeviceCard } from '@/components/mr';
+import { HIGHLIGHTS } from '@/data/thirdPartyDevices';
 
 // Docusaurus 3.x 无 useTranslate hook，用 translate 函数式 API 包装成一致的 t()
 const t = (...args) => {
@@ -35,11 +37,13 @@ const IconArrowRight = (p) => <Svg {...p}><line x1="5" y1="12" x2="19" y2="12" /
 const IconDownload = (p) => <Svg {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></Svg>;
 const IconFileText = (p) => <Svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><line x1="10" y1="9" x2="8" y2="9" /></Svg>;
 const IconRadio = (p) => <Svg {...p}><circle cx="12" cy="12" r="2" /><path d="M4.93 19.07a10 10 0 0 1 0-14.14M19.07 4.93a10 10 0 0 1 0 14.14M7.76 16.24a6 6 0 0 1 0-8.48M16.24 7.76a6 6 0 0 1 0 8.48" /></Svg>;
-const IconX = (p) => <Svg {...p}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Svg>;
+
 const IconGlobe = (p) => <Svg {...p}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></Svg>;
 const IconSmartphone = (p) => <Svg {...p}><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12" y2="18" /></Svg>;
 const IconUser = (p) => <Svg {...p}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></Svg>;
 const IconUsers = (p) => <Svg {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></Svg>;
+const IconShield = (p) => <Svg {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></Svg>;
+const IconMessage = (p) => <Svg {...p}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></Svg>;
 const IconGithub = (p) => <Svg {...p}><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></Svg>;
 const IconDiscord = (p) => <Svg {...p}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></Svg>;
 const IconMastodon = (p) => <Svg {...p}><path d="M21.58 6.58A12 12 0 0 0 17.5 3.3L17.44 3.3a12 12 0 0 0-11.88 0l-.06 0a12 12 0 0 0-4.08 3.28C.7 9.1.4 12.2.6 15.28l.02.26c.33 3.3 1.36 5.2 2.77 6.46 1.9 1.86 4.04 2.8 6.4 2.96l.2.01c1.5.08 2.96-.16 4.36-.66a12 12 0 0 0 3.8-2.06l.02-.02a1 1 0 0 0-.16-1.5l-.16-.1a1 1 0 0 0-1.32.2 9.5 9.5 0 0 1-3.1 1.7c-1.2.34-2.4.42-3.56.24l-.18-.03c-1.7-.3-3.04-.96-4-1.9a8.6 8.6 0 0 1-1.74-2.86l-.06-.18a9 9 0 0 1-.22-3.5l.06-.3c.16-.78.46-1.5.86-2.16l.12-.2a1 1 0 0 1 1.34-.32l.24.18a1 1 0 0 1 .28 1.28 7 7 0 0 0-.66 1.86l-.04.18a7 7 0 0 0 .24 3.5l.06.18c.37.96.96 1.8 1.74 2.5l.16.12a9.3 9.3 0 0 0 3.16 1.7l.2.04c1.4.2 2.8.06 4.16-.42a9 9 0 0 0 2.84-1.6 1 1 0 0 1 1.4 0l.18.16a1 1 0 0 1 .2 1.34z" /><path d="M14.5 9.8v4.4h-1.7V9.95c0-.74-.32-1.12-1-1.12-.73 0-1.1.3-1.1 1v3.36H9v-4.4c0-.74-.3-1.12-1-1.12-.72 0-1.1.3-1.1 1v3.36H5.6V9.8c0-1.4.92-2.32 2.32-2.32 1 0 1.7.4 2.1 1.2.4-.8 1.1-1.2 2.1-1.2 1.4 0 2.32.92 2.32 2.32z" /></Svg>;
@@ -96,84 +100,8 @@ const DEVICES = [
   { name: 'LilyGO T-Deck', desc: '带键盘的全功能掌机', price: '约 ¥380' },
 ];
 
-/* 设备刷写器：嵌入本地构建的 Meshtastic Web Flasher（仓库位于 E:/web-flasher，
-   构建产物放入 static/flasher/，实现方式与站点规划器 siteplanner 一致：
-   本地静态托管 + iframe 嵌入，避免依赖外网 flasher.meshtastic.org）。
-   注意：不要创建 src/pages/flasher.js，否则会与 static/flasher/ 路由撞车
-   （参考 site-planner.js 的注释）。 */
-const FLASHER_URL = '/flasher/index.html';
-
-const DeviceDialog = ({ onClose }) => {
-  const [showDevices, setShowDevices] = useState(false);
-  return (
-    <div
-      className="off-grid-dialog-mask"
-      onClick={onClose}
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          position: 'relative',
-          width: 'min(72rem, 100%)',
-          height: 'min(88vh, 900px)',
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRadius: 'var(--radius)',
-          border: '1px solid hsl(var(--border))',
-          background: 'hsl(var(--popover))',
-          color: 'hsl(var(--popover-foreground))',
-          overflow: 'hidden',
-          zIndex: 1,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.25rem', borderBottom: '1px solid hsl(var(--border))' }}>
-          <div>
-            <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700 }}>{t({ id: 'offGrid.dialog.title', message: '设备刷写器' })}</h2>
-            <div style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', marginTop: '0.2rem' }}>
-              {t({ id: 'offGrid.dialog.sub', message: '连接设备后在此刷写 / 更新 Meshtastic 固件' })}
-            </div>
-          </div>
-          <button onClick={onClose} aria-label={t({ id: 'offGrid.dialog.close', message: '关闭' })} style={{ background: 'none', border: 'none', color: 'hsl(var(--muted-foreground))', cursor: 'pointer', padding: 4 }}>
-            <IconX size={22} />
-          </button>
-        </div>
-
-        <iframe
-          src={FLASHER_URL}
-          title="Meshtastic Web Flasher"
-          loading="lazy"
-          allow="serial; bluetooth; usb"
-          style={{ flex: 1, width: '100%', border: 'none', background: '#fff' }}
-        />
-
-        <div style={{ borderTop: '1px solid hsl(var(--border))', padding: '0.6rem 1.25rem', background: 'hsl(var(--surface))' }}>
-          <button
-            onClick={() => setShowDevices((v) => !v)}
-            style={{ background: 'none', border: 'none', color: 'hsl(var(--btn-primary))', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', padding: 0 }}
-          >
-            {showDevices ? t({ id: 'offGrid.dialog.collapseList', message: '收起兼容设备列表' }) : t({ id: 'offGrid.dialog.viewList', message: '查看兼容设备列表' })}
-          </button>
-          {showDevices && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem', marginTop: '0.75rem', maxHeight: '160px', overflowY: 'auto' }}>
-              {DEVICES.map((d) => (
-                <div key={d.name} style={{ borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '0.75rem' }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.3rem' }}>{d.name}</div>
-                  <p style={{ fontSize: '0.78rem', color: 'hsl(var(--muted-foreground))', margin: '0 0 0.5rem', lineHeight: 1.5 }}>{d.desc}</p>
-                  <span style={{ fontSize: '0.8rem', color: 'hsl(var(--btn-primary))', fontWeight: 600 }}>{d.price}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+/* 设备刷写器：已由 MeshROCFlasher (React/TSX) 重写并直接集成进站点（路由 /flash），
+   无 iframe、无外部引用。原先的 iframe + static/flasher 方案已废弃。 */
 
 
 /* ---------- 节点群语料库（后期可由 AI 生成扩充） ----------
@@ -563,7 +491,7 @@ export default function OffGridPage() {
                   <Link to="/docs-center" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', background: 'hsl(var(--card))' }}>
                     {t({ id: 'offGrid.downloadCenter', message: '帮助中心' })} <IconDownload size={18} />
                   </Link>
-                  <Link to="/flasher" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', background: 'transparent', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                  <Link to="/flash" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))', background: 'transparent', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
                     {t({ id: 'offGrid.flasher', message: '设备刷写器' })} <IconSmartphone size={18} />
                   </Link>
                 </div>
@@ -597,6 +525,8 @@ export default function OffGridPage() {
                 { icon: IconUsers, title: t({ id: 'offGrid.feat.solar', message: '太阳能智能电源' }), desc: t({ id: 'offGrid.feat.solarDesc', message: 'CN3791 充电方案 + 智能休眠策略，解决休眠丢包与发送中断。' }) },
                 { icon: IconSmartphone, title: t({ id: 'offGrid.feat.driver', message: '自研外设驱动' }), desc: t({ id: 'offGrid.feat.driverDesc', message: '专为自研 PCB 编写，规避 USB 引脚冲突与射频干扰问题。' }) },
                 { icon: IconDownload, title: t({ id: 'offGrid.feat.open', message: '完全开源' }), desc: t({ id: 'offGrid.feat.openDesc', message: '固件遵循 GPL-3.0，硬件立创开源、星火计划入库，源码公开。' }) },
+                { icon: IconShield, title: t({ id: 'offGrid.feat.encrypt', message: '端到端加密' }), desc: t({ id: 'offGrid.feat.encryptDesc', message: '基于公钥的端到端加密，保障离网环境下的通信隐私与内容防篡改。' }) },
+                { icon: IconMessage, title: t({ id: 'offGrid.feat.storeforward', message: '离线消息中继' }), desc: t({ id: 'offGrid.feat.storeforwardDesc', message: '支持存储转发，节点离线时消息缓存在中继上，上线后自动投递。' }) },
               ].map((f) => (
                 <div key={f.title} style={{ borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', padding: '1.5rem' }}>
                   <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'hsl(var(--muted))', color: 'hsl(var(--btn-primary))', marginBottom: '1rem' }}>
@@ -616,6 +546,12 @@ export default function OffGridPage() {
             </div>
             <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.productsTitle', message: '社区开源硬件' })}</h2>
             <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 0 2rem' }}>{t({ id: 'offGrid.productsSub', message: '立创开源 · 星火计划入库，从山顶骨干到单兵终端，社区共同维护的四大硬件平台' })}</p>
+
+            {/* 自研硬件 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: '0 0 1rem' }}>
+              <span style={{ fontSize: '0.74rem', fontWeight: 700, fontFamily: 'var(--font-mono, monospace)', letterSpacing: '0.08em', color: 'hsl(var(--orange))', background: 'hsl(var(--orange) / 0.12)', border: '1px solid hsl(var(--orange) / 0.3)', borderRadius: '999px', padding: '0.22rem 0.7rem' }}>{t({ id: 'offGrid.badgeSelf', message: '自研 · MeshROC' })}</span>
+              <span style={{ fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))' }}>{t({ id: 'offGrid.selfNote', message: '四大平台，全部立创开源、星火计划入库' })}</span>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
               {[
                 { name: 'MeshROC Backbone', cn: t({ id: 'offGrid.prod.backbone', message: '山顶太阳能骨干节点' }), spec: '30dBm · CN3791 太阳能' },
@@ -629,6 +565,69 @@ export default function OffGridPage() {
                   <p className="font-mono" style={{ fontSize: '0.78rem', color: 'hsl(var(--btn-primary))', margin: 0 }}>{p.spec}</p>
                 </Link>
               ))}
+            </div>
+
+            {/* 第三方兼容硬件 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: '2.5rem 0 1rem' }}>
+              <span style={{ fontSize: '0.74rem', fontWeight: 700, fontFamily: 'var(--font-mono, monospace)', letterSpacing: '0.08em', color: 'hsl(var(--btn-primary))', background: 'hsl(var(--btn-primary) / 0.12)', border: '1px solid hsl(var(--btn-primary) / 0.3)', borderRadius: '999px', padding: '0.22rem 0.7rem' }}>{t({ id: 'offGrid.badgeThird', message: '第三方兼容' })}</span>
+              <span style={{ fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))' }}>{t({ id: 'offGrid.thirdNote', message: 'Meshtastic 生态厂商与社区项目，同样可刷 MeshROC 固件' })}</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+              {HIGHLIGHTS.map((d) => (
+                <DeviceCard key={d.name} img={d.img} vendor={d.vendor} name={d.name} desc={d.desc} tags={d.tags} status={d.status} />
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '1.75rem' }}>
+              <Link to="/hardware" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.3rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.92rem' }}>
+                {t({ id: 'offGrid.allHardware', message: '查看全部兼容硬件' })} <IconArrowRight size={16} />
+              </Link>
+            </div>
+          </section>
+
+          {/* ---------- 全国通用 ---------- */}
+          <section style={{ marginTop: '3.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--btn-primary))', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Nationwide by Design</span>
+            </div>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.nationTitle', message: '面向全国地形气候而生' })}</h2>
+            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 auto 2rem', maxWidth: '40rem', lineHeight: 1.7 }}>
+              {t({ id: 'offGrid.nationSub', message: '从西南深山到沿海丘陵，从西北戈壁到青藏高原——MeshROC 的射频模板、电源策略与路由算法按国内真实地况调校，而非照搬海外旷野默认配置。' })}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.9rem', marginBottom: '2rem' }}>
+              {[
+                t({ id: 'offGrid.land.n1', message: '华北山地' }),
+                t({ id: 'offGrid.land.n2', message: '东北林区' }),
+                t({ id: 'offGrid.land.n3', message: '南方多雨山林' }),
+                t({ id: 'offGrid.land.n4', message: '东南沿海丘陵' }),
+                t({ id: 'offGrid.land.n5', message: '西北荒漠戈壁' }),
+                t({ id: 'offGrid.land.n6', message: '青藏高原' }),
+                t({ id: 'offGrid.land.n7', message: '盆地河谷' }),
+                t({ id: 'offGrid.land.n8', message: '城中村高楼遮挡' }),
+                t({ id: 'offGrid.land.n9', message: '工业区电磁复杂' }),
+              ].map((land) => (
+                <div key={land} style={{ textAlign: 'center', padding: '0.8rem 0.6rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', fontSize: '0.85rem', color: 'hsl(var(--foreground))' }}>{land}</div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+              <Link to="/docs/comparison" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                <IconFileText size={18} /> {t({ id: 'offGrid.compareCta', message: 'MeshROC vs Meshtastic / MeshCore 全面对比' })} <IconArrowRight size={16} />
+              </Link>
+            </div>
+          </section>
+
+          {/* ---------- 网络客户端入口 ---------- */}
+          <section style={{ marginTop: '3.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'hsl(var(--btn-primary))', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Web Client</span>
+            </div>
+            <h2 className="font-mono" style={{ fontSize: '1.8rem', textAlign: 'center', margin: '0 0 0.5rem', fontWeight: 700 }}>{t({ id: 'offGrid.clientTitle', message: '浏览器即是控制台' })}</h2>
+            <p style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))', margin: '0 auto 2rem', maxWidth: '40rem', lineHeight: 1.7 }}>
+              {t({ id: 'offGrid.clientSub', message: '无需安装软件，用 Chrome / Edge 连接你的 MeshROC 设备，直接在网页里配置射频、管理节点、收发消息。兼容 Meshtastic 固件。' })}
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+              <Link to="/client" className="font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.7rem 1.2rem', borderRadius: 'var(--radius)', background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+                <IconGlobe size={18} /> {t({ id: 'offGrid.clientCta', message: '打开网络客户端' })} <IconArrowRight size={16} />
+              </Link>
             </div>
           </section>
 

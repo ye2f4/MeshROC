@@ -47,6 +47,25 @@ const GROUPS = [
     ],
   },
   {
+    title: '固件源码',
+    eyebrow: 'Source Code',
+    icon: IconCode,
+    items: [
+      {
+        name: 'MeshROC 固件源码包',
+        meta: '完整 PlatformIO 工程 · 含所有 board 定义与库依赖 · ~75 款设备支持',
+        action: '获取源码',
+        to: '/firmware-source',
+      },
+      {
+        name: '构建指南',
+        meta: 'PlatformIO 环境搭建 · pio run -e <board> 编译 · 烧录与调试',
+        action: '查看指南',
+        to: '/firmware-source',
+      },
+    ],
+  },
+  {
     title: 'PCB 工程文件',
     eyebrow: 'Hardware',
     icon: IconBox,

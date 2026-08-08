@@ -101,7 +101,7 @@ export default function RegisterPage() {
   return (
     <Layout title="注册 - 互联之域 MeshROC" description="加入 MeshROC 社区">
     <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         {/* 左侧：品牌 + 卖点 */}
         <aside style={{ display: 'none' }} className="register-aside">
           <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>互联之域 MeshROC</h1>
@@ -120,7 +120,7 @@ export default function RegisterPage() {
         </aside>
 
         {/* 右侧：表单 */}
-        <section style={{ background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
+        <section style={{ width: '100%', maxWidth: 440, background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
           <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'register.title', message: '注册 互联之域 MeshROC' })}</h2>
 
           {success ? (

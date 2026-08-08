@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Layout from '@theme/Layout';
 import { translate } from '@docusaurus/Translate';
 
@@ -30,16 +30,19 @@ const Svg = ({ children, className = '', size = 24, ...rest }) => (
 );
 const IconRadio = (p) => <Svg {...p}><circle cx="12" cy="12" r="2" /><path d="M4.93 19.07a10 10 0 0 1 0-14.14M19.07 4.93a10 10 0 0 1 0 14.14M7.76 16.24a6 6 0 0 1 0-8.48M16.24 7.76a6 6 0 0 1 0 8.48" /></Svg>;
 const IconMap = (p) => <Svg {...p}><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></Svg>;
-const IconX = (p) => <Svg {...p}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Svg>;
 const IconExternalLink = (p) => <Svg {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></Svg>;
 
-// 站点规划器为本地构建产物，部署在 static/planner/ 下
-// 注意：不能放在 static/site-planner/，否则会和 src/pages/site-planner.js
-// 生成的 Docusaurus 路由页 /site-planner/ 产物 build/site-planner/index.html 撞车，
-// 导致 iframe 加载到自身页面（"又打开当前网页"）。放到 static/planner/ 避开冲突。
-const PLANNER_URL = '/planner/index.html';
+// 站点规划器为本地构建产物，部署在 static/planner/ 下。
+// 此处直接将构建产物挂载进当前页面 DOM（无 iframe、无外部域引用）：
+// 读取 /planner/index.html，注入样式与入口脚本，由 Vue 应用挂载到 #app。
+//
+// 源码在 e:/meshtastic-site-planner（已全面改为 MeshROC 品牌），其 vite.config.ts
+// 的构建基址已固定为绝对路径 '/planner/'，因此 index.html 与运行时按
+// import.meta.env.BASE_URL 加载的资源（colormaps 色阶图、图标）在本页（/site-planner）
+// 内联挂载时也能正确解析——无需再对构建产物打补丁。下面对 './' 的改写仅作兜底。
+// 注意：不能把构建放到 static/site-planner/，以免与本页路由 /site-planner 撞车。
+const PLANNER_INDEX = '/planner/index.html';
 
-// 卡片式功能说明
 const FEATURES = [
   {
     icon: IconMap,
@@ -58,73 +61,65 @@ const FEATURES = [
   },
 ];
 
-const PlannerDialog = ({ onClose }) => (
-    <div
-      className="site-planner-dialog-mask"
-      onClick={onClose}
-      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }}
-    >
-    <div
-      role="dialog"
-      aria-modal="true"
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        position: 'relative',
-        width: 'min(76rem, 100%)',
-        height: 'min(90vh, 940px)',
-        maxHeight: '94vh',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 'var(--radius)',
-        border: '1px solid hsl(var(--border))',
-        background: 'hsl(var(--popover))',
-        color: 'hsl(var(--popover-foreground))',
-        overflow: 'hidden',
-        zIndex: 1,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.25rem', borderBottom: '1px solid hsl(var(--border))' }}>
-        <div>
-          <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700 }}>{t({ id: 'sitePlanner.dialog.title', message: 'MeshROC 站点规划器' })}</h2>
-          <div style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', marginTop: '0.2rem' }}>
-            {t({ id: 'sitePlanner.dialog.sub', message: '设置发射机与无线电参数，运行仿真即可在地图上看到覆盖预测' })}
-          </div>
-        </div>
-        <button onClick={onClose} aria-label={t({ id: 'sitePlanner.dialog.close', message: '关闭' })} style={{ background: 'none', border: 'none', color: 'hsl(var(--muted-foreground))', cursor: 'pointer', padding: 4 }}>
-          <IconX size={22} />
-        </button>
-      </div>
-
-      <iframe
-        src={PLANNER_URL}
-        title="MeshROC Site Planner"
-        loading="lazy"
-        allow="bluetooth; usb; geolocation"
-        style={{ flex: 1, width: '100%', border: 'none', background: '#0f1017' }}
-      />
-    </div>
-  </div>
-);
-
 export default function SitePlannerPage() {
-  const [open, setOpen] = useState(false);
+  const mountRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+  const [mountErr, setMountErr] = useState('');
 
-  // 锁定背景滚动
   useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [open]);
+    if (mounted || !mountRef.current) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(PLANNER_INDEX, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await res.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+        const mount = mountRef.current;
+        // 挂载点
+        const app = document.createElement('div');
+        app.id = 'app';
+        app.style.height = '100%';
+        mount.appendChild(app);
+
+        // 注入样式表（改写相对路径为 /planner/）
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach((l) => {
+          const href = (l.getAttribute('href') || '').replace(/^\.\//, '/planner/');
+          if (!href || document.querySelector(`link[href="${href}"]`)) return;
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = href;
+          document.head.appendChild(link);
+        });
+
+        // 注入入口模块脚本
+        const entry = doc.querySelector('script[type="module"]');
+        const src = entry ? (entry.getAttribute('src') || '').replace(/^\.\//, '/planner/') : '';
+        if (src && !document.querySelector(`script[data-planner-entry="${src}"]`)) {
+          const s = document.createElement('script');
+          s.type = 'module';
+          s.src = src;
+          s.setAttribute('data-planner-entry', src);
+          document.body.appendChild(s);
+        }
+        if (!cancelled) setMounted(true);
+      } catch (e) {
+        if (!cancelled) setMountErr('规划器加载失败，请刷新重试。');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted]);
 
   return (
     <Layout
       title={t({ id: 'sitePlanner.metaTitle', message: '站点规划器 | MeshROC' })}
       description={t({ id: 'sitePlanner.metaDesc', message: '使用 ITM / Longley-Rice 模型在浏览器本地预测 MeshROC 无线电覆盖范围的规划工具。' })}
     >
-      <main className="container" style={{ maxWidth: '64rem', margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
-        <header style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+      <main className="container" style={{ maxWidth: '72rem', margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
+        <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
             color: 'hsl(var(--btn-primary))', fontWeight: 600, fontSize: '0.85rem',
@@ -138,23 +133,9 @@ export default function SitePlannerPage() {
           <p style={{ fontSize: '1.05rem', color: 'hsl(var(--muted-foreground))', maxWidth: '40rem', margin: '0 auto', lineHeight: 1.6 }}>
             {t({ id: 'sitePlanner.intro', message: '基于 ITM / Longley-Rice 传播模型，在浏览器本地预测无线电覆盖范围。所有地形与计算都在你的设备上完成，不上传任何数据。' })}
           </p>
-          <div style={{ marginTop: '1.75rem' }}>
-            <button
-              onClick={() => setOpen(true)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.55rem',
-                background: 'hsl(var(--btn-primary))', color: 'hsl(var(--btn-primary-foreground))',
-                border: 'none', borderRadius: 'var(--radius)', padding: '0.8rem 1.6rem',
-                fontSize: '1rem', fontWeight: 600, cursor: 'pointer',
-                boxShadow: '0 8px 24px hsl(var(--btn-primary) / 0.35)',
-              }}
-            >
-              <IconMap size={18} /> {t({ id: 'sitePlanner.open', message: '打开规划器' })}
-            </button>
-          </div>
         </header>
 
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
           {FEATURES.map((f) => {
             const FIcon = f.icon;
             return (
@@ -176,12 +157,35 @@ export default function SitePlannerPage() {
           })}
         </section>
 
-        <p style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.82rem', color: 'hsl(var(--muted-foreground))' }}>
+        <div
+          ref={mountRef}
+          className="site-planner-mount"
+          style={{
+            width: '100%',
+            height: 'min(82vh, 880px)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid hsl(var(--border))',
+            overflow: 'hidden',
+            background: '#0f1017',
+            position: 'relative',
+          }}
+        >
+          {!mounted && !mountErr && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9aa', fontSize: '0.9rem' }}>
+              正在加载规划器…
+            </div>
+          )}
+          {mountErr && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f88', fontSize: '0.9rem' }}>
+              {mountErr}
+            </div>
+          )}
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.82rem', color: 'hsl(var(--muted-foreground))' }}>
           {t({ id: 'sitePlanner.note', message: '覆盖预测为理论模型估算，实际通信受环境、天线与设备影响。' })}
         </p>
       </main>
-
-      {open && <PlannerDialog onClose={() => setOpen(false)} />}
     </Layout>
   );
 }

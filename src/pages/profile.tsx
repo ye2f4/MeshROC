@@ -209,7 +209,7 @@ export default function ProfilePage() {
   return (
     <Layout title="个人中心" description="MeshROC 个人中心">
       <main style={{
-        maxWidth: 720,
+        maxWidth: 880,
         margin: '0 auto',
         padding: '32px 24px',
         background: 'hsl(var(--card))',

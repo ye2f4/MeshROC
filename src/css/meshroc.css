@@ -55,6 +55,31 @@
   }
 }
 
+/* ---------- About 圆形 logo ---------- */
+.mr-logo {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--mr-line);
+  box-shadow: var(--mr-shadow);
+}
+
+.mr-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mr-logo {
+    width: 72px;
+    height: 72px;
+  }
+}
+
 /* ---------- 通用区块 ---------- */
 .mr-section {
   margin-top: 3.5rem;
@@ -317,6 +342,25 @@
   box-shadow: var(--mr-shadow-hover);
 }
 
+.mr-card--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.mr-card--link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mr-card__more {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--mr-cyan);
+}
+
 .mr-card__icon {
   width: 2.6rem;
   height: 2.6rem;
@@ -440,6 +484,24 @@
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
   white-space: nowrap;
+}
+
+.mr-product__badges {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mr-product__badge--dev {
+  color: var(--mr-text-muted);
+  background: hsl(var(--muted) / 0.5);
+  border-color: hsl(var(--border));
+}
+
+.mr-product--dev {
+  opacity: 0.72;
 }
 
 /* ---------- 对比表 ---------- */
@@ -752,4 +814,179 @@
   .mr-dl__action {
     margin-left: auto;
   }
+}
+
+/* ---------- 设备卡片（含图片） ---------- */
+.mr-device {
+  padding: 0;
+}
+
+.mr-device__media {
+  aspect-ratio: 4 / 3;
+  background:
+    radial-gradient(120% 120% at 50% 0%, var(--mr-cyan-soft), transparent 68%),
+    var(--mr-surface-2);
+  border-bottom: 1px solid var(--mr-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mr-device__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.mr-device__media--ph {
+  background: var(--mr-surface-2);
+}
+
+.mr-device__ph {
+  font-family: var(--mr-mono);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--mr-text-muted);
+  letter-spacing: 0.04em;
+}
+
+.mr-device__body {
+  padding: 1.1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.mr-device__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.mr-device__vendor {
+  font-family: var(--mr-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mr-text-muted);
+}
+
+.mr-device__badge {
+  font-family: var(--mr-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--mr-cyan);
+  background: var(--mr-cyan-soft);
+  border: 1px solid hsl(var(--btn-primary) / 0.28);
+  border-radius: 999px;
+  padding: 0.16rem 0.5rem;
+  white-space: nowrap;
+}
+
+.mr-device__badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.mr-device__badge--self {
+  color: var(--mr-orange);
+  background: var(--mr-orange-soft);
+  border-color: hsl(var(--brand-orange) / 0.3);
+}
+
+.mr-device__badge--dev {
+  color: var(--mr-text-muted);
+  background: hsl(var(--muted) / 0.5);
+  border-color: hsl(var(--border));
+}
+
+.mr-device--dev {
+  opacity: 0.72;
+}
+
+.mr-device--dev .mr-device__media {
+  filter: grayscale(0.3);
+}
+
+.mr-device__actions {
+  margin-top: 0.7rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.mr-device__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background: hsl(var(--muted) / 0.5);
+  font-size: 0.7rem;
+  font-family: var(--mr-mono);
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  transition: background 0.17s, color 0.17s;
+}
+
+.mr-device__action:hover {
+  background: hsl(var(--btn-primary) / 0.1);
+  color: hsl(var(--btn-primary));
+}
+
+.mr-device__name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  color: var(--mr-text);
+  line-height: 1.35;
+}
+
+.mr-device__desc {
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--mr-text-muted);
+  margin: 0;
+}
+
+.mr-device .mr-tags {
+  margin-top: auto;
+  padding-top: 0.85rem;
+}
+
+/* ---------- 厂商分组 ---------- */
+.mr-vendor {
+  margin-top: 2.5rem;
+}
+
+.mr-vendor:first-child {
+  margin-top: 0;
+}
+
+.mr-vendor__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.mr-vendor__name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--mr-text);
+}
+
+.mr-vendor__note {
+  font-size: 0.85rem;
+  color: var(--mr-text-muted);
+  margin: 0;
 }

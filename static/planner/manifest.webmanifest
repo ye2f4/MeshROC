@@ -1,7 +1,8 @@
 {
   "name": "MeshROC 站点规划器",
   "short_name": "站点规划器",
-  "description": "使用 ITM / Longley-Rice 模型预测 MeshROC 无线电覆盖，全部计算都在你的浏览器本地完成。",
+  "description": "使用 ITM / Longley-Rice 模型预测 MeshROC 无线电覆盖范围，全部计算都在你的浏览器本地完成。",
+  "lang": "zh-CN",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

@@ -1,0 +1,218 @@
+/* =========================================================
+   MeshROC 固件刷写器（MeshROCFlasher）样式
+   复用 --mr-* 设计 token，跟随明暗主题。
+   ========================================================= */
+.mr-page {
+  min-height: 70vh;
+}
+
+.mr-loading {
+  padding: 4rem 1rem;
+  text-align: center;
+  color: var(--mr-text-muted);
+}
+
+.mr-flasher {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+  color: var(--mr-text);
+}
+
+.mr-flasher__head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.mr-flasher__logo {
+  height: 3.25rem;
+  width: auto;
+  border-radius: 10px;
+}
+.mr-flasher__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.mr-flasher__sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--mr-text-muted);
+}
+
+.mr-flasher__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 760px) {
+  .mr-flasher__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mr-flasher__card {
+  background: var(--mr-surface);
+  border: 1px solid var(--mr-line);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: var(--mr-shadow);
+}
+.mr-flasher__term-card {
+  margin-top: 1.25rem;
+}
+
+.mr-flasher__h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.mr-flasher__note {
+  font-size: 0.78rem;
+  color: var(--mr-orange);
+  margin: 0 0 0.6rem;
+}
+.mr-flasher__muted {
+  font-size: 0.85rem;
+  color: var(--mr-text-muted);
+}
+
+.mr-flasher__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.mr-flasher__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-surface-2);
+  color: var(--mr-text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.mr-flasher__item:hover {
+  border-color: var(--mr-cyan);
+}
+.mr-flasher__item.is-active {
+  border-color: var(--mr-cyan);
+  background: var(--mr-cyan-soft);
+}
+.mr-flasher__item-name {
+  font-weight: 500;
+}
+.mr-flasher__badge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--mr-cyan-soft);
+  color: var(--mr-cyan);
+}
+
+.mr-flasher__select {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-surface-2);
+  color: var(--mr-text);
+  font-size: 0.9rem;
+}
+.mr-flasher__manifest {
+  margin: 0.9rem 0;
+}
+
+.mr-flasher__flash {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, hsl(var(--btn-primary)), hsl(var(--brand-orange)));
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.mr-flasher__flash:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.mr-flasher__flash:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mr-flasher__progress {
+  margin-top: 0.9rem;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--mr-surface-2);
+  overflow: hidden;
+}
+.mr-flasher__bar {
+  height: 100%;
+  background: linear-gradient(90deg, hsl(var(--btn-primary)), hsl(var(--brand-orange)));
+  transition: width 0.2s ease;
+}
+
+.mr-flasher__term {
+  height: 260px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0b0f17;
+  border: 1px solid var(--mr-line);
+}
+.mr-flasher__log {
+  margin: 0.75rem 0 0;
+  max-height: 160px;
+  overflow-y: auto;
+  font-family: var(--mr-mono);
+  font-size: 0.78rem;
+  color: #9fb3a6;
+  white-space: pre-wrap;
+  background: #0b0f17;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+.mr-flasher__monitor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.mr-flasher__monitor-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+.mr-flasher__mini {
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-surface-2);
+  color: var(--mr-text);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.mr-flasher__mini.is-ok {
+  border-color: hsl(152 60% 45%);
+  color: hsl(152 60% 45%);
+}
+.mr-flasher__mini.is-danger {
+  border-color: hsl(0 70% 55%);
+  color: hsl(0 70% 55%);
+}

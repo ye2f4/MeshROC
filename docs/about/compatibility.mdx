@@ -9,6 +9,10 @@ description: "MeshROC 与 Meshtastic 的兼容关系：哪些完全互通、哪�
 
 MeshROC 基于 Meshtastic 协议生态构建，但**不是简单的二次开发**。本文说明两者的确切兼容边界。
 
+:::tip 想看完整三方对比？
+本文聚焦 MeshROC 与 Meshtastic 的互通边界。若想了解 MeshROC 与另一海外项目 **MeshCore** 在射频、路由、加密、电源与全国地貌适配上的逐项差异，请阅读 [MeshROC 与 Meshtastic / MeshCore 全面对比](/docs/comparison)。
+:::
+
 ## 完全兼容的部分
 
 所有 MeshROC 设备可与全球标准 Meshtastic 设备互相通信，包括：
@@ -35,6 +39,10 @@ MeshROC 基于 Meshtastic 协议生态构建，但**不是简单的二次开发*
 | 抗射频干扰系统 | 抑制大功率发射对屏幕/ADC 的干扰 | 无（纯本机） |
 | 低功耗休眠防丢包 | 修复休眠期间丢包与发送中断 | 无 |
 | 自定义报文智能解析 | 扩展报文的解析与自动控制 | 标准设备忽略未知报文 |
+| 全国地貌射频模板 | 常驻链路探测 + 多地貌参数自动切换（山地/林区/沿海/戈壁/高原…） | 无（纯本机策略） |
+| 国产电源芯片适配 | IP5326 充放电 / MAX17055 电量计遥测与省电调度 | 无（纯本机） |
+| 应急调度优先级 | 告警 / 求救 / 位置最高优先级区域广播 | 标准设备按自身规则处理 |
+| 分布式离线缓存 | 多中继分布式存储转发 | 标准设备忽略未知报文 |
 
 ## 混合组网的注意事项
 
@@ -52,6 +60,7 @@ MeshROC 固件跟进上游 Meshtastic 的协议版本演进。当上游发生**�
 
 ## 相关阅读
 
+- [MeshROC 与 Meshtastic / MeshCore 全面对比](/docs/comparison)
 - [项目介绍](/docs/introduction)
 - [Mesh 路由算法](/docs/overview/mesh-alg)
 - [硬件文档](/docs/hardware-docs)

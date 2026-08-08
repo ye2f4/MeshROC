@@ -19,29 +19,12 @@
   "navbarConfig": {
     "hideOnScroll": false,
     "items": [
-      { "label": "关于我们", "to": "/about", "position": "left" },
-      {
-        "type": "dropdown", "label": "系统", "position": "left",
-        "items": [
-          { "label": "硬件产品", "to": "/hardware" },
-          { "label": "固件系统", "to": "/firmware" },
-          { "label": "技术特性", "to": "/features" },
-          { "label": "应用场景", "to": "/scenarios" }
-        ]
-      },
-      { "label": "文档", "to": "/docs/introduction", "position": "left" },
-      { "label": "帮助中心", "to": "/docs-center", "position": "left" },
-      {
-        "type": "dropdown", "label": "资源", "position": "left",
-        "items": [
-          { "label": "开源社区", "to": "/community" },
-          { "label": "联系我们", "to": "/contact" },
-          { "label": "站点规划器", "to": "/site-planner" },
-          { "label": "固件刷写器", "to": "/flasher" },
-          { "label": "Meshtastic 文档", "href": "https://meshtastic.org/docs/" },
-          { "label": "GitHub", "href": "https://github.com/ye2f4/MeshROC" }
-        ]
-      },
+      { "label": "关于", "to": "/about", "position": "left" },
+      { "label": "系统", "to": "/system-hub", "position": "left" },
+      { "label": "文档", "to": "/docs-hub", "position": "left" },
+      { "label": "帮助", "to": "/docs-center", "position": "left" },
+      { "label": "资源", "to": "/resources-hub", "position": "left" },
+      { "label": "网络客户端", "to": "/client", "position": "left" },
       { "type": "custom-ChatButton", "position": "right" },
       { "type": "custom-UserMenu", "position": "right" }
     ]
@@ -62,6 +45,7 @@
         "items": [
           { "label": "硬件产品", "to": "/hardware" },
           { "label": "固件系统", "to": "/firmware" },
+          { "label": "固件源码", "to": "/firmware-source" },
           { "label": "技术特性", "to": "/features" },
           { "label": "下载中心", "to": "/download" }
         ]
@@ -69,7 +53,7 @@
       {
         "title": "资源",
         "items": [
-          { "label": "文档", "to": "/docs/introduction" },
+          { "label": "文档", "to": "/docs-hub" },
           { "label": "帮助中心", "to": "/docs-center" },
           { "label": "开源社区", "to": "/community" },
           { "label": "联系我们", "to": "/contact" }

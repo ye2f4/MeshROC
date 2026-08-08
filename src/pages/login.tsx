@@ -4,7 +4,6 @@ import Layout from '@theme/Layout';
 import { useHistory } from '@docusaurus/router';
 import { translate } from '@docusaurus/Translate';
 import { supabase } from '@/lib/supabase/client';
-import { SUPABASE_URL } from '@/lib/supabase/config';
 
 const t = (...args) => {
   const [opts, values] = args;
@@ -40,7 +39,7 @@ export default function LoginPage() {
   const oauth = async (provider) => {
     setLoading(true);
     setError('');
-    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${SUPABASE_URL}/auth/v1/callback` } });
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${window.location.origin}/profile` } });
     if (error) { setError(error.message); setLoading(false); }
   };
 
@@ -73,7 +72,7 @@ export default function LoginPage() {
   return (
     <Layout title="登录 - 互联之域 MeshROC" description="登录 MeshROC 社区，连接离线 Mesh 网络">
     <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '3rem 1.25rem 4rem' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <aside style={{ display: 'none' }} className="login-aside">
           <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1rem' }}>互联之域 MeshROC</h1>
           <p style={{ color: 'var(--ifm-color-emphasis-600)', lineHeight: 1.8 }}>
@@ -84,7 +83,7 @@ export default function LoginPage() {
           </p>
         </aside>
 
-        <section style={{ background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
+        <section style={{ width: '100%', maxWidth: 440, background: 'var(--ifm-card-background)', border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 16, padding: '2rem' }}>
           <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.35rem' }}>{t({ id: 'login.title', message: '登录 互联之域 MeshROC' })}</h2>
           <form onSubmit={login} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <input type="email" placeholder="邮箱" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required style={{ padding: '12px 16px', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8, fontSize: 14, minHeight: 48 }} />

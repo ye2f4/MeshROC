@@ -133,6 +133,18 @@ export const IconArrowRight = (p) => (
     <polyline points="12 5 19 12 12 19" />
   </Svg>
 );
+export const IconGlobe = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </Svg>
+);
+export const IconMessage = (p) => (
+  <Svg {...p}>
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </Svg>
+);
 export const IconBox = (p) => (
   <Svg {...p}>
     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
@@ -239,6 +251,52 @@ export function MrCard({ icon: Icon, orange, title, desc, list, tags }) {
           ))}
         </div>
       )}
+    </article>
+  );
+}
+
+/* ---------- 设备卡片（含图片） ---------- */
+export function DeviceCard({ img, vendor, name, desc, tags = [], badge = '第三方', badgeSelf = false, status, fwBoard }) {
+  const isDev = status === 'developing';
+  return (
+    <article className={`mr-card mr-device${isDev ? ' mr-device--dev' : ''}`}>
+      {img ? (
+        <div className="mr-device__media">
+          <img src={img} alt={name} loading="lazy" />
+        </div>
+      ) : (
+        <div className="mr-device__media mr-device__media--ph">
+          <span className="mr-device__ph">{name.slice(0, 2)}</span>
+        </div>
+      )}
+      <div className="mr-device__body">
+        <div className="mr-device__top">
+          <span className="mr-device__vendor">{vendor}</span>
+          <div className="mr-device__badges">
+            {isDev && <span className="mr-device__badge mr-device__badge--dev">{'开发中'}</span>}
+            <span className={`mr-device__badge${badgeSelf ? ' mr-device__badge--self' : ''}`}>{badge}</span>
+          </div>
+        </div>
+        <h3 className="mr-device__name">{name}</h3>
+        {desc && <p className="mr-device__desc">{desc}</p>}
+        {tags.length > 0 && (
+          <div className="mr-tags">
+            {tags.map((tg) => (
+              <span key={tg} className="mr-tag mr-tag--cyan">
+                {tg}
+              </span>
+            ))}
+          </div>
+        )}
+        {fwBoard && (
+          <div className="mr-device__actions">
+            <a href="/firmware-source" className="mr-device__action" title="查看固件源码与编译指南">
+              <IconCode size={13} />
+              <span>{fwBoard}</span>
+            </a>
+          </div>
+        )}
+      </div>
     </article>
   );
 }

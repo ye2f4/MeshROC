@@ -67,14 +67,16 @@ const WHO = [
 ];
 
 const DIFFS = [
-  { dim: '路由机制', meshroc: '分层骨干路由，骨干节点负责转发', others: '洪泛广播，全员转发' },
-  { dim: '信道拥堵', meshroc: '从机制上抑制广播风暴', others: '高密度下易爆信道拥堵' },
-  { dim: '射频频段', meshroc: '470–490MHz 国内免费频段', others: '868/915MHz 国内未开放' },
-  { dim: '山地覆盖', meshroc: 'NLOS 链路预算专项优化', others: '通用地形，无本土优化' },
-  { dim: '休眠丢包', meshroc: '电源系统重写，休眠不漏收', others: '已知休眠丢包与发送中断' },
-  { dim: '外设驱动', meshroc: '全套自研 PCB 专属驱动', others: '通用开发板移植' },
-  { dim: '太阳能', meshroc: '30dBm 太阳能骨干节点', others: '无对应工业级方案' },
-  { dim: '本地化', meshroc: '中文文档 + 国内频段合规', others: '以海外社区为主' },
+  { dim: '起源', meshroc: '中文社区，为国内多样地形与户外需求打造', mesh: '海外开源社区，面向全球业余户外爱好者', meshcore: '海外项目，主打远距离骨干中继' },
+  { dim: '网络架构', meshroc: '自适应混合路由 + 全国地貌射频模板', mesh: '受控洪泛，TTL 上限 7，适合 3–5 跳', meshcore: '距离矢量路由 + 离线消息节点，最大 64 跳' },
+  { dim: '射频调控', meshroc: '常驻链路探测，多地貌模板自动切换扩频/带宽/功率', mesh: '多为手动配置，缺自动调控', meshcore: '仅手动功率档位，无链路质量闭环' },
+  { dim: '休眠 / 功耗', meshroc: '休眠同步帧统一唤醒，太阳能节点大幅省电', mesh: '休眠简陋，易错过广播', meshcore: '可发休眠通告，但中继优先级固化' },
+  { dim: '离线消息', meshroc: '分布式缓存，可指派多处中继', mesh: '原生不支持，需 LXMF 插件', meshcore: '单一 Room‑Server 缓存' },
+  { dim: '应急调度', meshroc: '告警/求救/位置最高优先级，区域广播面向防灾指挥', mesh: '通用消息，无调度语义', meshcore: '消息类型固定，无分级应答' },
+  { dim: '加密安全', meshroc: 'AES‑256‑GCM，加密 + 完整性校验一体', mesh: 'AES‑256‑CTR，缺完整性校验', meshcore: 'CTR，原生无校验字段' },
+  { dim: '电源 / 国产硬件', meshroc: '深度适配 IP5326 / MAX17055 / 4G 网关', mesh: '协议层不管控电源芯片', meshcore: '仅读基础电压，国产外设支持有限' },
+  { dim: '全国地貌适配', meshroc: '9 类环境专项优化（山地/林区/沿海/戈壁/高原…）', mesh: '面向欧美旷野，无国内专项', meshcore: '面向海外开阔地，无多地貌预设' },
+  { dim: '角色扩展', meshroc: '节点角色动态，可新增专属报文类型', mesh: '插件生态臃肿，定制成本高', meshcore: '终端/中继/存储三类固化' },
 ];
 
 export default function AboutPage() {
@@ -148,15 +150,16 @@ export default function AboutPage() {
       <MrSection
         eyebrow="社区工程成果"
         title="我们在技术上做了什么"
-        lead="下面这些是社区成员在 Meshtastic 基础上补充的差异点，属于技术说明而非商业宣传。"
+        lead="下面这些是 MeshROC 在 Meshtastic 基础上补充的本土化差异，并与同为海外项目的 MeshCore 横向对比。完整逐条技术差异见《MeshROC 与 Meshtastic / MeshCore 全面对比》。"
       >
         <div className="mr-table-wrap">
           <table className="mr-table">
             <thead>
               <tr>
                 <th>维度</th>
-                <th className="mr-table__up">互联之域 / MeshROC</th>
-                <th>原版 / 通用方案</th>
+                <th className="mr-table__up">MeshROC（本土优化）</th>
+                <th>Meshtastic</th>
+                <th>MeshCore</th>
               </tr>
             </thead>
             <tbody>
@@ -164,12 +167,38 @@ export default function AboutPage() {
                 <tr key={d.dim}>
                   <td>{d.dim}</td>
                   <td className="mr-table__up">{d.meshroc}</td>
-                  <td className="mr-table__yes">{d.others}</td>
+                  <td>{d.mesh}</td>
+                  <td>{d.meshcore}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      </MrSection>
+
+      <MrSection
+        eyebrow="全国通用"
+        title="面向全国地形气候而生"
+        lead="MeshROC 的射频模板、电源策略与路由算法按国内真实地况调校，而非照搬海外旷野默认配置。换省只需切换环境模板，无需改动底层源码。"
+      >
+        <div className="mr-grid mr-grid--3">
+          {[
+            { icon: IconMountain, title: '华北山地 / 西南深山', desc: '依靠山顶中继搭建远距离通信链路，覆盖山谷与盲区。' },
+            { icon: IconMountain, title: '东北林区', desc: '射频模板适配春夏密林遮挡，以及秋冬落叶后信号通透的季节变化。' },
+            { icon: IconMountain, title: '南方多雨山林', desc: '潮湿环境射频配置抵抗雨水与盐雾带来的信号损耗。' },
+            { icon: IconMountain, title: '东南沿海丘陵', desc: '高湿度专项参数，规避盐雾腐蚀导致的链路劣化。' },
+            { icon: IconMountain, title: '西北荒漠戈壁', desc: '降低报文重传次数，节约太阳能节点电量。' },
+            { icon: IconMountain, title: '青藏高原', desc: '低温低气压下调整扩频因子与前导码长度。' },
+            { icon: IconMountain, title: '盆地 / 河谷', desc: '河谷峡谷独立射频模板，抑制多径反射与遮挡。' },
+            { icon: IconMountain, title: '城中村 / 高楼遮挡', desc: '自动启用时隙信道避让，规避楼宇峡谷干扰。' },
+            { icon: IconMountain, title: '工业区电磁复杂', desc: '依电磁环境启停时隙，规避工业设备与民用无线电干扰。' },
+          ].map((l) => (
+            <MrCard key={l.title} icon={l.icon} title={l.title} desc={l.desc} />
+          ))}
+        </div>
+        <p className="mr-p" style={{ marginTop: '1.25rem' }}>
+          想看逐项技术差异，请阅读 <a href="/docs/comparison">MeshROC 与 Meshtastic / MeshCore 全面对比</a>。
+        </p>
       </MrSection>
 
       <MrSection

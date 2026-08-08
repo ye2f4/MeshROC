@@ -4,11 +4,13 @@ import {
   MrHeader,
   MrSection,
   MrCTA,
+  DeviceCard,
   IconSun,
   IconServer,
   IconSmartphone,
   IconThermometer,
 } from '@site/src/components/mr';
+import { VENDORS } from '@site/src/data/thirdPartyDevices';
 
 const PRODUCTS = [
   {
@@ -16,6 +18,7 @@ const PRODUCTS = [
     name: 'MeshROC Backbone',
     cn: '山顶太阳能骨干节点',
     badge: '骨干枢纽',
+    status: 'developing',
     desc: '部署于山地制高点的大功率中继节点，是整张 Mesh 网络的多跳路由核心。',
     specs: [
       '大功率 30dBm LoRa 远距离中继',
@@ -30,6 +33,7 @@ const PRODUCTS = [
     name: 'MeshROC Gateway',
     cn: 'POE 城市基站',
     badge: '7×24 在线',
+    status: 'developing',
     desc: '面向城市楼宇的固定基站节点，通过有线网口把 Mesh 网络接入内网与互联网。',
     specs: [
       'ESP32-S3 + W5500 有线网口',
@@ -44,6 +48,7 @@ const PRODUCTS = [
     name: 'MeshROC Walk',
     cn: '手持终端',
     badge: '主力产品',
+    status: 'developing',
     desc: '面向户外徒步与应急通信的单兵手持终端，实体键盘 + 高清屏幕，脱离手机独立使用。',
     specs: [
       'ESP32-S3 主控',
@@ -59,6 +64,7 @@ const PRODUCTS = [
     name: 'MeshROC Sensor',
     cn: '低功耗传感终端',
     badge: '超低功耗',
+    status: 'developing',
     desc: '面向野外无人值守场景的传感采集节点，长时间电池供电运行。',
     specs: [
       'ESP32-C3 超低功耗主控',
@@ -85,7 +91,7 @@ export default function HardwarePage() {
       <MrSection>
         <div className="mr-grid mr-grid--2">
           {PRODUCTS.map((p) => (
-            <article key={p.name} className="mr-card mr-product">
+            <article key={p.name} className={`mr-card mr-product${p.status === 'developing' ? ' mr-product--dev' : ''}`}>
               <div className="mr-product__head">
                 <div className="mr-card__icon" style={{ marginBottom: 0 }}>
                   <p.icon size={22} />
@@ -96,7 +102,10 @@ export default function HardwarePage() {
                     <span className="mr-product__cn">{p.cn}</span>
                   </h3>
                 </div>
-                <span className="mr-product__badge">{p.badge}</span>
+                <div className="mr-product__badges">
+                  {p.status === 'developing' && <span className="mr-product__badge mr-product__badge--dev">开发中</span>}
+                  <span className="mr-product__badge">{p.badge}</span>
+                </div>
               </div>
               <p className="mr-card__desc">{p.desc}</p>
               <ul className="mr-card__list">
@@ -112,6 +121,38 @@ export default function HardwarePage() {
                 ))}
               </div>
             </article>
+          ))}
+        </div>
+      </MrSection>
+
+      <MrSection
+        eyebrow="第三方兼容硬件"
+        eyebrowOrange
+        title="社区共建的兼容设备"
+        lead="除自研四大平台外，Meshtastic 生态还有大量第三方厂商与社区项目。以下设备同样可运行 MeshROC 固件，按厂商归类，供你参考选型。"
+      >
+        <div className="mr-thirdparty">
+          {VENDORS.map((v) => (
+            <div key={v.name} className="mr-vendor">
+              <div className="mr-vendor__head">
+                <h3 className="mr-vendor__name">{v.name}</h3>
+                <p className="mr-vendor__note">{v.note}</p>
+              </div>
+              <div className="mr-grid mr-grid--4">
+                {v.devices.map((d) => (
+                  <DeviceCard
+                    key={d.name}
+                    img={d.img}
+                    vendor={v.name}
+                    name={d.name}
+                    desc={d.desc}
+                    tags={d.tags}
+                    status={d.status}
+                    fwBoard={d.fwBoard}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </MrSection>

@@ -1,0 +1,216 @@
+/* =========================================================
+   MeshROC 网络客户端（/client）样式 —— 完全继承官网主题变量
+   ========================================================= */
+
+.mrclient {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .mrclient {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mrclient__panel {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 1.1rem;
+}
+
+.mrclient__panel + .mrclient__panel {
+  margin-top: 1.1rem;
+}
+
+.mrclient__panel h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: hsl(var(--foreground));
+}
+
+.mrclient__panel h3 svg {
+  color: hsl(var(--btn-primary));
+}
+
+/* 状态条 */
+.mrclient__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+.mrclient__status .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: hsl(var(--muted-foreground));
+}
+.mrclient__status--connected { background: hsl(var(--btn-primary) / 0.14); color: hsl(var(--btn-primary)); }
+.mrclient__status--connected .dot { background: hsl(var(--btn-primary)); }
+.mrclient__status--ready { background: hsl(var(--btn-primary) / 0.18); color: hsl(var(--btn-primary)); }
+.mrclient__status--ready .dot { background: hsl(var(--btn-primary)); box-shadow: 0 0 0 3px hsl(var(--btn-primary) / 0.25); }
+.mrclient__status--error { background: hsl(var(--destructive) / 0.14); color: hsl(var(--destructive)); }
+.mrclient__status--error .dot { background: hsl(var(--destructive)); }
+
+.mrclient__hint {
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+  margin: 0.6rem 0 0;
+}
+
+/* 信息行 */
+.mrclient__kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  margin: 0;
+}
+.mrclient__kv dt { color: hsl(var(--muted-foreground)); }
+.mrclient__kv dd { margin: 0; color: hsl(var(--foreground)); font-weight: 600; word-break: break-all; }
+
+/* 环境模板按钮组 */
+.mrclient__env {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+.mrclient__env button {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--surface));
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mrclient__env button:hover {
+  border-color: hsl(var(--btn-primary));
+  color: hsl(var(--btn-primary));
+}
+.mrclient__env button:active { transform: translateY(1px); }
+
+/* 表单 */
+.mrclient__field { margin-bottom: 0.7rem; }
+.mrclient__field label {
+  display: block;
+  font-size: 0.78rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0.3rem;
+}
+.mrclient__input,
+.mrclient__select {
+  width: 100%;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+.mrclient__input:focus,
+.mrclient__select:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
+}
+
+.mrclient__row { display: flex; gap: 0.5rem; }
+.mrclient__row > * { flex: 1; }
+
+/* 按钮（复用站点 .mr-btn 视觉，这里补一个紧凑变体） */
+.mrclient__btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mrclient__btn--primary {
+  background: hsl(var(--btn-primary));
+  color: hsl(var(--btn-primary-foreground));
+}
+.mrclient__btn--primary:hover { background: hsl(var(--btn-primary-hover, var(--btn-primary))); }
+.mrclient__btn--ghost {
+  background: transparent;
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+.mrclient__btn--ghost:hover { border-color: hsl(var(--btn-primary)); color: hsl(var(--btn-primary)); }
+.mrclient__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.mrclient__btn--block { width: 100%; }
+
+/* 聊天 */
+.mrclient__chat { display: flex; flex-direction: column; height: 420px; }
+.mrclient__msgs {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.3rem;
+}
+.mrclient__msg {
+  max-width: 85%;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.mrclient__msg--me { align-self: flex-end; background: hsl(var(--btn-primary) / 0.14); border-color: hsl(var(--btn-primary) / 0.4); }
+.mrclient__msg .who { font-size: 0.7rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.15rem; }
+.mrclient__composer { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+
+/* 节点列表 */
+.mrclient__nodes { display: flex; flex-direction: column; gap: 0.4rem; max-height: 260px; overflow-y: auto; }
+.mrclient__node {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+}
+.mrclient__node .name { font-weight: 600; color: hsl(var(--foreground)); }
+.mrclient__node .meta { color: hsl(var(--muted-foreground)); font-size: 0.72rem; }
+
+.mrclient__logs {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  max-height: 160px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.mrclient__empty {
+  font-size: 0.82rem;
+  color: hsl(var(--muted-foreground));
+  text-align: center;
+  padding: 1.5rem 0;
+}
