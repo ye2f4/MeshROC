@@ -193,25 +193,27 @@ a+.navbar__link {
   }
 }
 
+/* 移动端：直接隐藏整个桌面导航项容器（仅保留品牌 + 汉堡菜单），
+   避免桌面项与侧边栏弹出内容重复显示 */
 @media (width < 997px) {
-  .navbar__items--left .navbar__link:not(.navbar__brand) {
+  .navbar__items--left,
+  .navbar__items--right {
     display: none !important;
   }
 
-  .navbar__items--right>.navbar__item:not([class*="search"]):not([class*="Search"]) {
-    display: none !important;
-  }
-
+  /* 搜索框（若有）在移动端保留可见 */
+  .navbar__items--right .navbar__search,
   .navbar__items--right [class*="searchBox"],
-  .navbar__items--right [class*="SearchBar"],
-  .navbar__items--right .navbar__search {
+  .navbar__items--right [class*="SearchBar"] {
     display: flex !important;
   }
-}
 
-@media (width < 600px) {
-  .navbar__link {
-    display: none !important;
+  .navbar__toggle {
+    display: inline-flex !important;
+    align-items: center;
+    margin-inline-end: 0.25rem;
+    min-inline-size: 2rem;
+    min-block-size: 2rem;
   }
 }
 

@@ -18,44 +18,74 @@ const FLASHER_CONFIG = {
   /** 设备硬件清单（离线兜底在 /data/hardware-list.json） */
   deviceApi: 'https://api.meshtastic.org/resource/deviceHardware',
   deviceFallback: '/data/hardware-list.json',
-  /** 固件版本列表 */
+  /** 固件版本列表（上游返回 releases.stable/beta/dev[].id） */
   firmwareListApi: 'https://api.meshtastic.org/github/firmware/list',
-  /** 单个版本的固件清单（含分区地址 → bin 文件名）基址 */
+  /** 离线固件版本清单兜底 */
+  firmwareListFallback: '/data/firmware-list.json',
+  /** 固件目录基址：<base><cleanVersion>/ 下含 firmware-<board>-<cleanVersion>.mt.json 与各 bin */
   firmwareBase: 'https://raw.githubusercontent.com/meshtastic/meshtastic.github.io/master/firmware-',
 };
 
+/** 去掉版本号前的 v 前缀（v2.7.26.abc → 2.7.26.abc） */
+const cleanVersion = (v: string) => (v || '').replace(/^v/, '');
+
 /* ---------------------------- 类型 ---------------------------- */
-type FirmwareFileMap = Record<string, string>; // address(hex) -> bin filename
-
-interface FirmwareManifest {
-  files: FirmwareFileMap;
-  fullErase?: boolean;
-  description?: string;
-  edition?: string;
-  version?: string;
-  date?: string;
-}
-
 interface Hardware {
   name: string;
   target?: string;
   hwModel?: number;
   espChip?: string | null;
   nrfChip?: string | null;
-  vari(ants?: unknown): unknown;
   variantToFriendlyName?: Record<string, string>;
-  files?: FirmwareFileMap;
 }
 
 interface DeviceHardware {
-  supportLevel: 'stable' | 'beta' | 'dev' | string;
+  hwModel?: number;
+  hwModelSlug?: string;
+  supportLevel?: 'stable' | 'beta' | 'dev' | string;
   ownership?: string;
   hardware: Hardware;
 }
 
-interface FirmwareResponse {
-  firmwareOptions: Record<string, Record<string, Record<string, string>>>;
-  availableFirmware?: Record<string, unknown>;
+/** 上游版本列表：releases.stable/beta/dev 均为 { id, title }[] */
+interface FirmwareListResponse {
+  releases?: {
+    stable?: { id: string; title?: string }[];
+    beta?: { id: string; title?: string }[];
+    dev?: { id: string; title?: string }[];
+  };
+}
+
+/** 发布清单（firmware-<cleanVersion>.json）：只列 board，不含 bin */
+interface ReleaseTarget {
+  board: string;
+  platform: string;
+}
+interface ReleaseManifest {
+  version: string;
+  targets: ReleaseTarget[];
+}
+
+/** 单个 board 的目标清单（firmware-<board>-<cleanVersion>.mt.json）：含真实 bin 与分区表 */
+interface TargetManifestFile {
+  name: string;
+  md5?: string;
+  bytes?: number;
+  part_name?: string;
+}
+interface Partition {
+  name: string;
+  type: string;
+  subtype: string;
+  offset: string;
+  size: string;
+  flags: string;
+}
+interface TargetManifest {
+  version?: string;
+  files: TargetManifestFile[];
+  part: Partition[];
+  [k: string]: any;
 }
 
 /* ---------------------------- 工具 ---------------------------- */
@@ -81,6 +111,33 @@ function platformOf(d: DeviceHardware): 'esp' | 'nrf' | 'stm32' | 'other' {
   return 'other';
 }
 
+/** 把离线硬件清单条目（displayName/platformioTarget/architecture）归一化为组件统一的 DeviceHardware 结构 */
+function normalizeDevice(o: any): DeviceHardware {
+  if (o && o.hardware) return o as DeviceHardware;
+  const arch = (o?.architecture || '').toLowerCase();
+  const espChip = arch === 'esp32' || arch === 'esp8266' ? arch : undefined;
+  const nrfChip = arch.startsWith('nrf') ? arch : undefined;
+  return {
+    hwModel: o?.hwModel,
+    hwModelSlug: o?.hwModelSlug,
+    supportLevel: o?.supportLevel,
+    hardware: {
+      name: o?.displayName || o?.hwModelSlug || `设备 ${o?.hwModel ?? ''}`,
+      target: o?.platformioTarget,
+      espChip,
+      nrfChip,
+    },
+  };
+}
+
+/** 从上游 releases 结构收集去重、降序的版本号列表 */
+function collectVersions(data?: FirmwareListResponse): string[] {
+  const r = data?.releases;
+  if (!r) return [];
+  const ids = [...(r.stable || []), ...(r.beta || []), ...(r.dev || [])].map((x) => x.id);
+  return [...new Set(ids)].sort().reverse();
+}
+
 /* ---------------------------- 组件 ---------------------------- */
 export default function MeshROCFlasher() {
   const [devices, setDevices] = useState<DeviceHardware[]>([]);
@@ -91,7 +148,7 @@ export default function MeshROCFlasher() {
   const [versionErr, setVersionErr] = useState<string>('');
   const [version, setVersion] = useState<string>('');
 
-  const [manifest, setManifest] = useState<FirmwareManifest | null>(null);
+  const [manifest, setManifest] = useState<TargetManifest | null>(null);
   const [manifestErr, setManifestErr] = useState<string>('');
 
   const [busy, setBusy] = useState(false);
@@ -117,7 +174,7 @@ export default function MeshROCFlasher() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (cancelled) return;
-        const list: DeviceHardware[] = Array.isArray(data) ? data : (data.devices ?? []);
+        const list: DeviceHardware[] = (Array.isArray(data) ? data : (data.devices ?? [])).map(normalizeDevice);
         list.sort((a, b) => (a.hardware?.name || '').localeCompare(b.hardware?.name || ''));
         setDevices(list);
       } catch (e) {
@@ -127,7 +184,7 @@ export default function MeshROCFlasher() {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
           if (cancelled) return;
-          const list: DeviceHardware[] = Array.isArray(data) ? data : (data.devices ?? []);
+          const list: DeviceHardware[] = (Array.isArray(data) ? data : (data.devices ?? [])).map(normalizeDevice);
           list.sort((a, b) => (a.hardware?.name || '').localeCompare(b.hardware?.name || ''));
           setDevices(list);
           setDeviceErr('（使用离线设备清单）');
@@ -144,16 +201,35 @@ export default function MeshROCFlasher() {
   /* 版本列表 */
   useEffect(() => {
     let cancelled = false;
+    const loadFrom = async (url: string): Promise<string[]> => {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: FirmwareListResponse = await res.json();
+      return collectVersions(data);
+    };
     (async () => {
       try {
-        const res = await fetch(FLASHER_CONFIG.firmwareListApi, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: FirmwareResponse = await res.json();
+        const vers = await loadFrom(FLASHER_CONFIG.firmwareListApi);
         if (cancelled) return;
-        const vers = Object.keys(data.firmwareOptions || {}).sort().reverse();
-        setVersions(vers);
+        if (vers.length) {
+          setVersions(vers);
+          return;
+        }
+        throw new Error('empty');
       } catch (e) {
-        if (!cancelled) setVersionErr('无法加载固件版本列表。');
+        // 离线兜底
+        try {
+          const vers = await loadFrom(FLASHER_CONFIG.firmwareListFallback);
+          if (cancelled) return;
+          if (vers.length) {
+            setVersions(vers);
+            setVersionErr('（使用离线固件版本清单）');
+            return;
+          }
+          throw new Error('empty');
+        } catch (e2) {
+          if (!cancelled) setVersionErr('无法加载固件版本列表（离线清单也不可用）。');
+        }
       }
     })();
     return () => {
@@ -161,10 +237,11 @@ export default function MeshROCFlasher() {
     };
   }, []);
 
-  /* 选中版本后加载固件清单 */
+  /* 选中版本 + 设备后，加载该 board 的目标清单（含真实 bin 与分区表） */
   useEffect(() => {
-    if (!version) {
+    if (!version || !selected?.hardware?.target || platformOf(selected) !== 'esp') {
       setManifest(null);
+      setManifestErr('');
       return;
     }
     let cancelled = false;
@@ -172,19 +249,24 @@ export default function MeshROCFlasher() {
     setManifest(null);
     (async () => {
       try {
-        const url = `${FLASHER_CONFIG.firmwareBase}${version}/firmware.json`;
+        const clean = cleanVersion(version);
+        const board = selected.hardware.target as string;
+        const url = `${FLASHER_CONFIG.firmwareBase}${clean}/firmware-${board}-${clean}.mt.json`;
         const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: FirmwareManifest = await res.json();
+        const data: TargetManifest = await res.json();
         if (!cancelled) setManifest(data);
       } catch (e) {
-        if (!cancelled) setManifestErr('无法加载该版本的固件清单。');
+        if (!cancelled)
+          setManifestErr(
+            `无法加载 ${selected?.hardware?.target} 的分区清单（该设备/版本可能无浏览器刷写支持，或网络受限）。`,
+          );
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [version]);
+  }, [version, selected]);
 
   /* 刷写日志终端 */
   useEffect(() => {
@@ -251,17 +333,25 @@ export default function MeshROCFlasher() {
         /* keep 115200 */
       }
 
-      const firmwareBaseUrl = `${FLASHER_CONFIG.firmwareBase}${version}/`;
+      const clean = cleanVersion(version);
+      const firmwareBaseUrl = `${FLASHER_CONFIG.firmwareBase}${clean}/`;
+      const partByName: Record<string, Partition> = Object.fromEntries(
+        (manifest.part || []).map((p) => [p.name, p]),
+      );
+      const fileArray = (manifest.files || [])
+        .map((f) => {
+          const part = partByName[f.part_name || ''] || (manifest.part || [])[0];
+          const address = part ? parseInt(part.offset, 16) : 0;
+          return { path: firmwareBaseUrl + f.name, address };
+        })
+        .filter((f) => f.path && !Number.isNaN(f.address))
+        .sort((a, b) => a.address - b.address);
       const flashOptions = {
-        fileArray: Object.entries(manifest.files).map(([address, file]) => ({
-          path: firmwareBaseUrl + file,
-          address: parseInt(address, 16),
-        })),
+        fileArray,
         flashSize: 'keep',
-        eraseAll: !!manifest.fullErase,
+        eraseAll: false,
         flashMode: 'keep',
         flashFreq: 'keep',
-        flashSize_2: '',
         deviceManufacturer: 'MeshROC',
         reportProgress: (fileIndex: number, written: number, total: number) => {
           const pct = total > 0 ? Math.round((written / total) * 100) : 0;
@@ -360,13 +450,14 @@ export default function MeshROCFlasher() {
           )}
 
           {manifestErr && <p className="mr-flasher__note">{manifestErr}</p>}
+          {selected && platformOf(selected) !== 'esp' && (
+            <p className="mr-flasher__note">
+              该平台（NRF / STM32）暂不支持浏览器内刷写，请使用 UF2 / DFU 方式。
+            </p>
+          )}
           {manifest && (
             <div className="mr-flasher__manifest">
-              <p className="mr-flasher__muted">
-                共 {Object.keys(manifest.files).length} 个分区
-                {manifest.fullErase ? ' · 整片擦除' : ''}
-              </p>
-              {manifest.edition && <p className="mr-flasher__muted">版本：{manifest.edition}</p>}
+              <p className="mr-flasher__muted">共 {manifest.files.length} 个分区文件已就绪</p>
             </div>
           )}
 

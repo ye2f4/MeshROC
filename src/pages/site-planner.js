@@ -63,12 +63,22 @@ const FEATURES = [
 
 export default function SitePlannerPage() {
   const mountRef = useRef(null);
+  const didInit = useRef(false);
   const [mounted, setMounted] = useState(false);
   const [mountErr, setMountErr] = useState('');
 
+  // 把 /planner 构建产物挂载进当前页面 DOM（无 iframe、无外部域）
   useEffect(() => {
-    if (mounted || !mountRef.current) return;
-    let cancelled = false;
+    if (didInit.current) return; // 防止 StrictMode 双调用导致重复挂载两个 #app
+    didInit.current = true;
+    const mount = mountRef.current;
+    if (!mount) return;
+    // 去重：移除可能残留的挂载点 / 入口脚本
+    const prevApp = mount.querySelector('#app');
+    if (prevApp) prevApp.remove();
+    const prevScript = document.querySelector('script[data-planner-entry]');
+    if (prevScript) prevScript.remove();
+
     (async () => {
       try {
         const res = await fetch(PLANNER_INDEX, { cache: 'no-store' });
@@ -76,7 +86,6 @@ export default function SitePlannerPage() {
         const html = await res.text();
         const doc = new DOMParser().parseFromString(html, 'text/html');
 
-        const mount = mountRef.current;
         // 挂载点
         const app = document.createElement('div');
         app.id = 'app';
@@ -103,15 +112,12 @@ export default function SitePlannerPage() {
           s.setAttribute('data-planner-entry', src);
           document.body.appendChild(s);
         }
-        if (!cancelled) setMounted(true);
+        setMounted(true);
       } catch (e) {
-        if (!cancelled) setMountErr('规划器加载失败，请刷新重试。');
+        setMountErr('规划器加载失败，请刷新重试。');
       }
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, [mounted]);
+  }, []);
 
   return (
     <Layout
