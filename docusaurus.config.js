@@ -57,6 +57,14 @@ const config = {
   ],
 
   plugins: [
+    // 重定向：Docusaurus 文档根 /docs 无对应 slug 文档（会 404），
+    // 将其导向站点自带的文档门户页 /docs-hub，避免 broken link。
+    [
+      require.resolve('@docusaurus/plugin-client-redirects'),
+      {
+        redirects: [{ from: '/docs', to: '/docs-hub' }],
+      },
+    ],
     // 注入 Tailwind / PostCSS 与 `@/` 路径别名（复用 meshtastic 布局体系所需）
     function meshrocBuildPlugin() {
       return {
