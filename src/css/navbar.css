@@ -193,19 +193,18 @@ a+.navbar__link {
   }
 }
 
-/* 移动端：直接隐藏整个桌面导航项容器（仅保留品牌 + 汉堡菜单），
-   避免桌面项与侧边栏弹出内容重复显示 */
+/* 移动端：左侧导航链接（关于/系统/文档/帮助/资源/博客/网络客户端）隐藏，
+   仅保留品牌 + 汉堡；这些项仍可在汉堡菜单内访问 */
 @media (width < 997px) {
-  .navbar__items--left,
-  .navbar__items--right {
+  /* 注意：左侧容器真实 class 是 .navbar__items（无 --left 修饰），
+     故用 :not(.navbar__items--right) 精确命中左侧，避免误伤汉堡与 logo */
+  .navbar__items:not(.navbar__items--right) .navbar__link {
     display: none !important;
   }
 
-  /* 搜索框（若有）在移动端保留可见 */
-  .navbar__items--right .navbar__search,
-  .navbar__items--right [class*="searchBox"],
-  .navbar__items--right [class*="SearchBar"] {
-    display: flex !important;
+  /* 右侧容器（聊天室 / 登录头像 / 搜索）整体隐藏，内容收进汉堡菜单 */
+  .navbar__items--right {
+    display: none !important;
   }
 
   .navbar__toggle {
