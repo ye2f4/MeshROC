@@ -41,7 +41,7 @@ export default function BlogPostItems({items}) {
                 .join('、')
             : 'MeshCN 转载';
         const tags = m.tags || [];
-        const coverTag = tags[0] || 'MeshCN';
+        const coverTag = (tags[0] && tags[0].label) || 'MeshCN';
         const hue = hashHue(title || permalink);
         const gradient = `linear-gradient(135deg, hsl(${hue} 62% 42%), hsl(${(hue + 38) % 360} 70% 56%))`;
         return (
