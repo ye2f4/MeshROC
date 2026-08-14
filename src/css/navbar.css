@@ -70,23 +70,16 @@
   }
 }
 
+/* 注意：Docusaurus 的 logo <img> 本身 class 就是 `.navbar__logo`
+   （外层 wrapper 是 `.navbar__brand`），并不是「.navbar__logo 内的 img」。
+   故限宽必须直接写在 .navbar__logo 上，写 .navbar__logo img 会永远匹配不到 */
 .navbar__logo {
   height: 2.75rem;
   width: auto;
-  margin-inline-end: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.navbar__logo img,
-.navbar__logo__img {
-  height: 100%;
-  width: auto;
   max-width: 14rem;
+  margin-inline-end: 0.5rem;
   object-fit: contain;
-  display: block;
+  flex-shrink: 0;
 }
 
 .navbar__title {
@@ -213,6 +206,19 @@ a+.navbar__link {
     margin-inline-end: 0.25rem;
     min-inline-size: 2rem;
     min-block-size: 2rem;
+  }
+
+  /* logo 在移动端自适应缩放、不遮挡汉堡，并在汉堡右侧剩余空间内居中 */
+  .navbar__brand {
+    flex: 1;                 /* 占据汉堡按钮右侧的全部剩余空间 */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* logo（+标题）在该空间内居中 */
+    min-width: 0;           /* 允许收缩，避免把汉堡挤出或重叠 */
+  }
+  .navbar__logo {
+    height: 2rem;           /* 比桌面 2.75rem 更小，移动端更协调 */
+    max-width: 100%;        /* 跟随容器自动缩放，不再溢出 */
   }
 }
 
