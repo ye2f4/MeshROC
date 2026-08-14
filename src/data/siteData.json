@@ -24,6 +24,7 @@
       { "label": "文档", "to": "/docs-hub", "position": "left" },
       { "label": "帮助", "to": "/docs-center", "position": "left" },
       { "label": "资源", "to": "/resources-hub", "position": "left" },
+      { "label": "博客", "to": "/blog", "position": "left" },
       { "label": "网络客户端", "to": "/client", "position": "left" },
       { "type": "custom-ChatButton", "position": "right" },
       { "type": "custom-UserMenu", "position": "right" }

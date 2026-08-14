@@ -41,7 +41,15 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           showLastUpdateTime: false,
         },
-        blog: false,
+        blog: {
+          path: 'blog',
+          routeBasePath: 'blog',
+          // 转载自 MeshCN 社区的文章，按日期倒序展示
+          postsPerPage: 12,
+          blogTitle: '博客 · MeshCN 转载',
+          blogDescription: 'MeshCN（Meshtastic 中国社区）精选文章转载，涵盖教程、评测、公告与案例。',
+          showReadingTime: true,
+        },
         sitemap: false,
         // 仅保留 pages（/off-grid 页面作为主页）
         pages: {
