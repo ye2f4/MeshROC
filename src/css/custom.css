@@ -88,12 +88,13 @@
   }
   /* 关键：logotext.webp 是「图标+文字」宽图，绝不能同时锁死 width/height，
      否则会被压成 24×24 的正方形（且只有导航栏高度的 1/3）。
-     只给高度上限，宽度按比例自适应。 */
+     只给高度上限、宽度按比例自适应；max-width 必须是固定值(不能用 100%)——
+     因为移动端 .navbar__brand 是 flex:1 的居中容器，100% 会让 logo 填满整条栏变「奇大无比」。 */
   .navbar__logo {
     height: auto !important;
-    max-height: 2.75rem !important;
+    max-height: 2.75rem !important; /* 导航栏 4.5rem 的一半是 2.25rem，此处 2.75rem 已超一半 */
     width: auto !important;
-    max-width: 100% !important;
+    max-width: 14rem !important;
     margin-inline-end: 0.25rem;
     object-fit: contain;
   }
