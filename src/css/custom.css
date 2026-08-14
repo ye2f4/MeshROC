@@ -92,9 +92,9 @@
      因为移动端 .navbar__brand 是 flex:1 的居中容器，100% 会让 logo 填满整条栏变「奇大无比」。 */
   .navbar__logo {
     height: auto !important;
-    max-height: 2.75rem !important; /* 导航栏 4.5rem 的一半是 2.25rem，此处 2.75rem 已超一半 */
+    max-height: 2.25rem !important; /* = 导航栏 4.5rem 的一半，明确小于导航栏 */
     width: auto !important;
-    max-width: 14rem !important;
+    max-width: 12rem !important;
     margin-inline-end: 0.25rem;
     object-fit: contain;
   }
