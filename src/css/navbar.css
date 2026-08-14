@@ -72,11 +72,13 @@
 
 /* 注意：Docusaurus 的 logo <img> 本身 class 就是 `.navbar__logo`
    （外层 wrapper 是 `.navbar__brand`），并不是「.navbar__logo 内的 img」。
-   故限宽必须直接写在 .navbar__logo 上，写 .navbar__logo img 会永远匹配不到 */
+   故限宽必须直接写在 .navbar__logo 上，写 .navbar__logo img 会永远匹配不到。
+   用 height:auto + max-height（而非固定 height）保证按比例缩放、不被横向挤压 */
 .navbar__logo {
-  height: 2.75rem;
+  height: auto;
+  max-height: 3rem;            /* 至少导航栏(4.5rem)一半以上，舒展不压扁 */
   width: auto;
-  max-width: 14rem;
+  max-width: 16rem;
   margin-inline-end: 0.5rem;
   object-fit: contain;
   flex-shrink: 0;
@@ -217,8 +219,10 @@ a+.navbar__link {
     min-width: 0;           /* 允许收缩，避免把汉堡挤出或重叠 */
   }
   .navbar__logo {
-    height: 2rem;           /* 比桌面 2.75rem 更小，移动端更协调 */
-    max-width: 100%;        /* 跟随容器自动缩放，不再溢出 */
+    height: auto;
+    max-height: 2.75rem;    /* 至少导航栏(4.5rem)一半(2.25rem)以上，比之前(2rem)更大更舒展 */
+    max-width: 100%;        /* 跟随容器自适应，按比例缩放不挤压 */
+    width: auto;
   }
 }
 
