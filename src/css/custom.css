@@ -94,7 +94,7 @@
     height: auto !important;
     max-height: 2.25rem !important; /* = 导航栏 4.5rem 的一半，明确小于导航栏 */
     width: auto !important;
-    max-width: 12rem !important;
+    max-width: 8rem !important;    /* 移动端居中容器里收窄宽度，避免宽字标在窄屏占比过大 */
     margin-inline-end: 0.25rem;
     object-fit: contain;
   }

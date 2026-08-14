@@ -221,7 +221,7 @@ a+.navbar__link {
   .navbar__logo {
     height: auto;
     max-height: 2.25rem;    /* = 导航栏 4.5rem 的一半，明确小于导航栏 */
-    max-width: 12rem;       /* 固定上限：移动端 .navbar__brand 是 flex:1 居中容器，100% 会撑满整条栏 */
+    max-width: 8rem;        /* 移动端居中容器里收窄宽度，避免宽字标在窄屏占比过大 */
     width: auto;
   }
 }
@@ -345,9 +345,9 @@ a+.navbar__link {
 }
 
 /* 侧边栏品牌区里的 logo（logotext.webp 宽图文）在窄屏收敛，避免溢出 */
-.navbar-sidebar__brand .navbar__logo img,
+.navbar-sidebar__brand .navbar__logo,
 .navbar-sidebar__brand .navbar__logo__img {
-  max-width: 11rem;
+  max-width: 8rem;           /* 直接命中 logo 图片本身（Docusaurus 的 logo <img> 其 class 就是 .navbar__logo，写 img 会永远匹配不到） */
   max-height: 2.25rem;       /* 与顶栏 logo 收敛一致（=导航栏一半），避免侧边栏品牌区过高 */
 }
 
