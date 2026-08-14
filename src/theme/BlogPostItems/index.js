@@ -44,12 +44,22 @@ export default function BlogPostItems({items}) {
         const coverTag = (tags[0] && tags[0].label) || 'MeshCN';
         const hue = hashHue(title || permalink);
         const gradient = `linear-gradient(135deg, hsl(${hue} 62% 42%), hsl(${(hue + 38) % 360} 70% 56%))`;
+        // 优先用文章封面图（front matter image）；无图时回退品牌色渐变块（封面位置始终预留）
+        const coverImage = m.image || (m.frontMatter && m.frontMatter.image) || '';
         return (
           <article className="blog-card" key={permalink}>
             <Link
               to={permalink}
               className="blog-card__cover"
-              style={{background: gradient}}>
+              style={coverImage ? undefined : {background: gradient}}>
+              {coverImage && (
+                <img
+                  className="blog-card__cover-img"
+                  src={coverImage}
+                  alt={title}
+                  loading="lazy"
+                />
+              )}
               <span className="blog-card__cover-tag">{coverTag}</span>
             </Link>
             <div className="blog-card__body">

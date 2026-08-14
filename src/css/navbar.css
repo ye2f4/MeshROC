@@ -76,9 +76,9 @@
    用 height:auto + max-height（而非固定 height）保证按比例缩放、不被横向挤压 */
 .navbar__logo {
   height: auto;
-  max-height: 3rem;            /* 至少导航栏(4.5rem)一半以上，舒展不压扁 */
+  max-height: 2.75rem;         /* 收敛至 2.75rem，明显小于导航栏 4.5rem，上下均留足留白 */
   width: auto;
-  max-width: 16rem;
+  max-width: 14rem;            /* 固定上限，绝不用 100%，避免被 flex 容器撑满 */
   margin-inline-end: 0.5rem;
   object-fit: contain;
   flex-shrink: 0;
@@ -220,8 +220,8 @@ a+.navbar__link {
   }
   .navbar__logo {
     height: auto;
-    max-height: 2.75rem;    /* 至少导航栏(4.5rem)一半(2.25rem)以上，比之前(2rem)更大更舒展 */
-    max-width: 100%;        /* 跟随容器自适应，按比例缩放不挤压 */
+    max-height: 2.75rem;    /* 收敛至 2.75rem，明显小于导航栏 4.5rem */
+    max-width: 14rem;       /* 固定上限：移动端 .navbar__brand 是 flex:1 居中容器，100% 会撑满整条栏 */
     width: auto;
   }
 }
@@ -348,6 +348,7 @@ a+.navbar__link {
 .navbar-sidebar__brand .navbar__logo img,
 .navbar-sidebar__brand .navbar__logo__img {
   max-width: 11rem;
+  max-height: 2.75rem;       /* 与顶栏 logo 收敛一致，避免侧边栏品牌区过高 */
 }
 
 /* 关闭按钮优化 */
