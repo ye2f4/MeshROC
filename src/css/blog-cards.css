@@ -1,0 +1,110 @@
+/* ========== 博客列表卡片 ========== */
+/* 覆盖 Docusaurus 默认博客列表：圆角卡片网格（封面 + 标题 + 作者 + 简介） */
+
+.blog-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  border-color: hsl(var(--btn-primary));
+}
+
+.blog-card__cover {
+  display: block;
+  position: relative;
+  height: 150px;
+  width: 100%;
+}
+
+.blog-card__cover-tag {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
+}
+
+.blog-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem 1.1rem;
+  flex: 1;
+}
+
+.blog-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: hsl(var(--card-foreground));
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-card__title:hover {
+  color: hsl(var(--btn-primary));
+}
+
+.blog-card__excerpt {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: hsl(var(--muted-foreground));
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.blog-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.blog-card__author {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.blog-card__date {
+  white-space: nowrap;
+}
+
+/* 窄屏单列 */
+@media (max-width: 480px) {
+  .blog-card-grid {
+    grid-template-columns: 1fr;
+  }
+}

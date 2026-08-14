@@ -2,7 +2,7 @@
 title: "通信失联时，如何用 Meshtastic 和无人机自建生命通道？"
 date: "2025-04-21"
 description: "万一自然灾害摧毁通信塔，手机彻底失去信号，我们还能靠什么保持联系？这不仅是一个关于极客 DIY 的项目，更是一次在极端环境中寻找求生之路的尝试。本文将带你探索如何用百元级别的 Meshtastic 设备，加上一台消费级无人机，打造一个可以悬停在空中的临时通信基站——在 4G、WiFi 网络崩溃的时刻，为你和他人开辟一条关键的生命通道。"
-slug: "Turning-a-Drone-into-a-Mobile-Cell-Tower-with-Meshtastic-A-Lifesaving-Project"
+slug: "drone-meshtastic-mobile-cell-tower"
 ---
 
 > 本文转载自 MeshCN（Meshtastic 中国社区），原文链接：https://meshcn.net/Turning-a-Drone-into-a-Mobile-Cell-Tower-with-Meshtastic-A-Lifesaving-Project/

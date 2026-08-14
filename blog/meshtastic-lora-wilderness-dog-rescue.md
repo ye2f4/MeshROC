@@ -4,7 +4,7 @@ date: "2025-01-31"
 description: "当爱犬在荒野走失，如何仅靠两个「离线黑匣子」在15分钟内锁定位置？这篇真实案例揭秘极客圈大热的 Meshtastic 设备如何用 LoRa 技术上演「汪汪队立大功」——无需手机信号，自建无线网格网络穿透密林，竟比传统GPS更可靠？"
 tags:
   - "tracker"
-slug: "Meshtastic-LoRa-Wilderness-Dog-Rescue-Case-Study"
+slug: "meshtastic-lora-wilderness-dog-rescue"
 ---
 
 > 本文转载自 MeshCN（Meshtastic 中国社区），原文链接：https://meshcn.net/Meshtastic-LoRa-Wilderness-Dog-Rescue-Case-Study/

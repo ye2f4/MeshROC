@@ -6,7 +6,7 @@ tags:
   - "Ebyte"
   - "EoRa-S3"
   - "GPS"
-slug: "gps-module-ebyte-eora-s3-CN"
+slug: "gps-module-ebyte-eora-s3-cn"
 ---
 
 > 本文转载自 MeshCN（Meshtastic 中国社区），原文链接：https://meshcn.net/gps-module-ebyte-eora-s3-CN/

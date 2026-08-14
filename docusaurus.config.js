@@ -65,14 +65,10 @@ const config = {
   ],
 
   plugins: [
-    // 重定向：Docusaurus 文档根 /docs 无对应 slug 文档（会 404），
-    // 将其导向站点自带的文档门户页 /docs-hub，避免 broken link。
-    [
-      require.resolve('@docusaurus/plugin-client-redirects'),
-      {
-        redirects: [{ from: '/docs', to: '/docs-hub' }],
-      },
-    ],
+    // 说明：曾用 @docusaurus/plugin-client-redirects 把 /docs 重定向到 /docs-hub。
+    // 该插件只在生产构建生效（dev 下 /docs 仍 404），且本地常缺该依赖导致 dev 起不来。
+    // 现已改为提供真实的文档首页 docs/docs-home.mdx（slug: /）→ /docs 直接可访问，
+    // 故移除该插件；若要恢复重定向，注意 from 不能与已存在路由冲突。
     // 注入 Tailwind / PostCSS 与 `@/` 路径别名（复用 meshtastic 布局体系所需）
     function meshrocBuildPlugin() {
       return {

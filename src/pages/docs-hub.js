@@ -22,7 +22,7 @@ export default function DocsHubPage() {
 
       <MrSection eyebrow="Categories" title="浏览文档">
         <div className="mr-grid mr-grid--2">
-          <Link to="/docs-hub" className="mr-card mr-card--link">
+          <Link to="/docs" className="mr-card mr-card--link">
             <div className="mr-card__icon">
               <IconFileText size={22} />
             </div>

@@ -4,7 +4,7 @@ date: "2025-02-28"
 description: "在 Meshtastic 生态中，ESP32 和 nRF52 设备以低功耗、小体积著称，但计算能力和扩展性受限。如果你曾想要一台既能运行 Meshtastic，又提供完整 Linux 体验的设备，Femtofox 就是你的答案。Femtofox 运行 Foxbuntu，支持 SSH 远程管理、中文输入、Web 服务器，并提供更强的计算能力和扩展接口，同时保持低功耗特性，适合长期离网运行。"
 tags:
   - "Linux"
-slug: "the-femtofox-pro-is-an-ubuntu-running-single-board-computer-built-with-meshtastic-in-mind"
+slug: "femtofox-pro-meshtastic-sbc"
 ---
 
 > 本文转载自 MeshCN（Meshtastic 中国社区），原文链接：https://meshcn.net/the-femtofox-pro-is-an-ubuntu-running-single-board-computer-built-with-meshtastic-in-mind/

@@ -7,7 +7,7 @@ tags:
   - "fakeTec"
   - "Heltec"
   - "DIY"
-slug: "what-is-fakeTec-opensource-diy-meshtastic-project"
+slug: "what-is-faketec-diy-meshtastic-project"
 ---
 
 > 本文转载自 MeshCN（Meshtastic 中国社区），原文链接：https://meshcn.net/what-is-fakeTec-opensource-diy-meshtastic-project/

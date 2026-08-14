@@ -4,7 +4,7 @@ date: "2025-10-27"
 description: "在 LoRa 自组网的世界里，Meshtastic 几乎是“默认答案”。但最近出了个新项目——MeshCore，正悄悄地在全球各地生根发芽。它不兼容 Meshtastic，却又能在完全离线的环境下传递加密消息；它既是一个 C++ Mesh 网络库，也是可直接刷入 Heltec、GAT562 等设备的固件。不同于 Meshtastic 那种占用过高的洪泛网络，MeshCore 更克制、更安静，也更可"
 tags:
   - "MeshCore"
-slug: "meshcore-as-an-incompatible-alternative-to-meshtastic-how-to-set-it-up-for-messaging"
+slug: "meshcore-vs-meshtastic-messaging"
 ---
 
 > 本文转载自 MeshCN（Meshtastic 中国社区），原文链接：https://meshcn.net/meshcore-as-an-incompatible-alternative-to-meshtastic-how-to-set-it-up-for-messaging/
