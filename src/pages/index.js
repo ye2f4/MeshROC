@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabase/client';
 import { safeGetUser } from '@/lib/supabase/safe';
 import { DeviceCard } from '@/components/mr';
 import { HIGHLIGHTS } from '@/data/thirdPartyDevices';
-import { meshROCClient, connectMeshROC, channelToGuestbookSuffix, type ChatMessage } from '@/lib/meshroc-device/bridge';
+import { meshROCClient, connectMeshROC, channelToGuestbookSuffix } from '@/lib/meshroc-device/bridge';
+import type { ChatMessage } from '@/lib/meshroc-device/bridge';
 
 // Docusaurus 3.x 无 useTranslate hook，用 translate 函数式 API 包装成一致的 t()
 const t = (...args) => {
@@ -209,7 +210,7 @@ const MessageBoard = () => {
   // 仅追加显示，不打乱云端留言逻辑；按 channel 匹配当前选中频道。
   useEffect(() => {
     setDeviceMsgs([]); // 切换频道时清空旧频道遗留的电台消息
-    const onMsg = (m: ChatMessage) => {
+    const onMsg = (m) => {
       const suffix = channelToGuestbookSuffix(m.channel);
       // 仅显示与当前留言板频道对应的电台消息
       if (!channel.id.endsWith(suffix)) return;
