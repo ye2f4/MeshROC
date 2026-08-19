@@ -7,7 +7,6 @@ import { safeGetUser } from '@/lib/supabase/safe';
 import { DeviceCard } from '@/components/mr';
 import { HIGHLIGHTS } from '@/data/thirdPartyDevices';
 import { meshROCClient, connectMeshROC, channelToGuestbookSuffix } from '@/lib/meshroc-device/bridge';
-import type { ChatMessage } from '@/lib/meshroc-device/bridge';
 
 // Docusaurus 3.x 无 useTranslate hook，用 translate 函数式 API 包装成一致的 t()
 const t = (...args) => {
