@@ -101,6 +101,21 @@ MeshROC 固件本就是 Meshtastic 分支，其 USB CDC 已默认暴露上述序
 IP5326/MAX17055 遥测与「环境模板编号」，Web 客户端 `set_config` 时一并下发。该扩展独立于现有互通协议，
 可渐进合入。当前 `/client` 已用标准字段把「环境模板」落地，固件自动按对应 `LoRaConfig` 工作。
 
+### 4.1 反转重构后的自研接口（过渡说明）
+
+> 与本文「沿用标准协议」互补，而非替代。详见 [优化路线图](/roadmap) 与固件仓库 `docs/meshroc-preservation-contract.md` §12。
+
+固件正进行内核反转重构，将在保留上述标准 protobuf 通道的**同时**，新增自研 REST 通道
+`/api/v1/meshroc/*`（返回 JSON，与原版 protobuf 端点协议隔离），承载自研资产运维：
+
+- `GET /api/v1/meshroc/config` / `PUT /api/v1/meshroc/config` —— 读写 `MeshROCConfig`（自研角色、RAP 参数、GATEWAY 桥接）
+- `GET /api/v1/meshroc/role` —— 读本机角色与转发判据
+- `GET /api/v1/meshroc/rap/topology` / `rap/routes` —— RAP 归属表与定向路由表
+- `GET /api/v1/meshroc/gateway/status` / `POST .../gateway/reconnect` —— GATEWAY 桥接状态与重连
+
+标准通道（Meshtastic APP 蓝牙/GATT、`/api/v1/*`）继续保留以保证 100% 兼容；自研通道**只增不改**原版行为。
+本文 §2~§3 的 SDK 仍适用于标准通道；自研通道将由 `src/lib/meshroc-device/` 增加一层 JSON client 对接。
+
 ## 5. 日后扩展点（备用清单）
 
 - **新增报文类型**：在 `protobuf.ts` 的 `SCHEMAS` 追加消息/字段即可（如火灾告警、水文遥测），`client.ts` 增加对应 `sendXxx`。

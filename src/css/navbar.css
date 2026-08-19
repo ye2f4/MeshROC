@@ -70,18 +70,24 @@
   }
 }
 
-/* 注意：Docusaurus 的 logo <img> 本身 class 就是 `.navbar__logo`
-   （外层 wrapper 是 `.navbar__brand`），并不是「.navbar__logo 内的 img」。
-   故限宽必须直接写在 .navbar__logo 上，写 .navbar__logo img 会永远匹配不到。
-   用 height:auto + max-height（而非固定 height）保证按比例缩放、不被横向挤压 */
+/* 重要：Docusaurus 3.x 的 NavbarLogo 中，`imageClassName`(=navbar__logo)
+   是应用在「外层 <div>」上的，真正的 <img> 在 div 内部且没有额外 class。
+   故必须用 `.navbar__logo img` 才能命中图片本体进行限高限宽；
+   直接写 .navbar__logo 只会作用在 div 容器上，图片仍按自身大尺寸溢出。 */
 .navbar__logo {
-  height: auto;
+  display: flex;               /* div 容器纵向居中，图片受自身限高后仍居中 */
+  align-items: center;
+  flex-shrink: 0;
+  margin-inline-end: 0.5rem;
+}
+
+.navbar__logo img {
+  display: block;
+  height: auto;                /* 按比例缩放，避免固定 height 造成挤压 */
   max-height: 2.25rem;         /* = 导航栏 4.5rem 的一半，明确小于导航栏且上下留白充足 */
   width: auto;
   max-width: 12rem;            /* 固定上限，绝不用 100%，避免被 flex 容器撑满 */
-  margin-inline-end: 0.5rem;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .navbar__title {
@@ -219,6 +225,10 @@ a+.navbar__link {
     min-width: 0;           /* 允许收缩，避免把汉堡挤出或重叠 */
   }
   .navbar__logo {
+    display: flex;
+    align-items: center;
+  }
+  .navbar__logo img {
     height: auto;
     max-height: 2.25rem;    /* = 导航栏 4.5rem 的一半，明确小于导航栏 */
     max-width: 8rem;        /* 移动端居中容器里收窄宽度，避免宽字标在窄屏占比过大 */
@@ -344,11 +354,13 @@ a+.navbar__link {
   gap: 0.75rem;
 }
 
-/* 侧边栏品牌区里的 logo（logotext.webp 宽图文）在窄屏收敛，避免溢出 */
-.navbar-sidebar__brand .navbar__logo,
-.navbar-sidebar__brand .navbar__logo__img {
-  max-width: 8rem;           /* 直接命中 logo 图片本身（Docusaurus 的 logo <img> 其 class 就是 .navbar__logo，写 img 会永远匹配不到） */
+/* 侧边栏品牌区里的 logo（logotext.webp 宽图文）在窄屏收敛，避免溢出
+   注意：imageClassName(=navbar__logo) 是外层 <div>，须命中 .navbar__logo img */
+.navbar-sidebar__brand .navbar__logo img {
+  max-width: 8rem;           /* 直接命中 logo 图片本体，避免宽字标在侧边栏溢出 */
   max-height: 2.25rem;       /* 与顶栏 logo 收敛一致（=导航栏一半），避免侧边栏品牌区过高 */
+  height: auto;
+  width: auto;
 }
 
 /* 关闭按钮优化 */

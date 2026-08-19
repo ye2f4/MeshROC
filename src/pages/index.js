@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client';
 import { safeGetUser } from '@/lib/supabase/safe';
 import { DeviceCard } from '@/components/mr';
 import { HIGHLIGHTS } from '@/data/thirdPartyDevices';
+import { meshROCClient, connectMeshROC, channelToGuestbookSuffix, type ChatMessage } from '@/lib/meshroc-device/bridge';
 
 // Docusaurus 3.x 无 useTranslate hook，用 translate 函数式 API 包装成一致的 t()
 const t = (...args) => {
@@ -174,6 +175,9 @@ const MessageBoard = () => {
   const [sending, setSending] = useState(false);
   const [user, setUser] = useState(null);
   const [needLogin, setNeedLogin] = useState(false);
+  const [deviceMsgs, setDeviceMsgs] = useState([]);
+  const [deviceConnected, setDeviceConnected] = useState(false);
+  const [deviceBusy, setDeviceBusy] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -200,6 +204,44 @@ const MessageBoard = () => {
     })();
     return () => { active = false; };
   }, [channel.id]);
+
+  // 订阅本地串口电台的实时消息（MeshROCDeviceClient → bridge 单例）。
+  // 仅追加显示，不打乱云端留言逻辑；按 channel 匹配当前选中频道。
+  useEffect(() => {
+    setDeviceMsgs([]); // 切换频道时清空旧频道遗留的电台消息
+    const onMsg = (m: ChatMessage) => {
+      const suffix = channelToGuestbookSuffix(m.channel);
+      // 仅显示与当前留言板频道对应的电台消息
+      if (!channel.id.endsWith(suffix)) return;
+      setDeviceMsgs((prev) => [
+        ...prev,
+        {
+          key: `dev-${m.id ?? Date.now()}-${m.from}`,
+          from: m.from,
+          text: m.text,
+          time: m.time,
+        },
+      ]);
+    };
+    const off = meshROCClient.on('message', onMsg);
+    const syncStatus = () => setDeviceConnected(meshROCClient.status === 'ready' || meshROCClient.status === 'connected');
+    const offStatus = meshROCClient.on('status', syncStatus);
+    syncStatus();
+    return () => { off(); offStatus(); };
+  }, [channel.id]);
+
+  const handleConnectDevice = async () => {
+    if (deviceBusy) return;
+    setDeviceBusy(true);
+    try {
+      await connectMeshROC();
+      setDeviceConnected(true);
+    } catch (e) {
+      console.warn('连接本机电台失败（需用户授权 USB）：', e);
+    } finally {
+      setDeviceBusy(false);
+    }
+  };
 
   // 自动滚动到底部
   useEffect(() => {
@@ -232,6 +274,23 @@ const MessageBoard = () => {
   };
 
   const renderMsg = (m) => {
+    // 设备消息（本地电台直连）没有 user_id，用 device 标记区分样式
+    if (m.device) {
+      const nodeFrom = `!${String(m.from).toString(16).toUpperCase().padStart(8, '0').slice(-4)}`;
+      return (
+        <div key={m.key} style={{ alignSelf: 'flex-start', maxWidth: '82%' }}>
+          <div style={{ fontSize: '0.7rem', color: 'hsl(var(--btn-primary))', marginBottom: '0.15rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <IconRadio size={11} /> 本机电台 · {nodeFrom}
+          </div>
+          <div style={{
+            padding: '0.45rem 0.7rem', borderRadius: 'var(--radius)',
+            fontSize: '0.82rem', lineHeight: 1.5,
+            background: 'hsl(var(--btn-primary) / 0.12)', color: 'hsl(var(--foreground))',
+            border: '1px solid hsl(var(--btn-primary) / 0.25)', textAlign: 'left',
+          }}>{m.text}</div>
+        </div>
+      );
+    }
     const self = user && m.user_id === user.id;
     const who = self ? '我' : (m.nickname || '网友');
     return (
@@ -267,6 +326,21 @@ const MessageBoard = () => {
         <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: 'hsl(var(--btn-primary))', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'hsl(var(--btn-primary))', display: 'inline-block' }} /> {t({ id: 'offGrid.nodeChat.live', message: '实时' })}
         </span>
+        <button
+          onClick={handleConnectDevice}
+          disabled={deviceBusy || deviceConnected}
+          title={deviceConnected ? '本机电台已连接' : '连接本机串口电台，实时显示 LoRa 频道消息'}
+          style={{
+            marginLeft: '0.5rem', padding: '0.25rem 0.6rem', borderRadius: '999px', fontSize: '0.7rem',
+            border: '1px solid hsl(var(--btn-primary) / 0.4)', cursor: (deviceBusy || deviceConnected) ? 'not-allowed' : 'pointer',
+            background: deviceConnected ? 'hsl(var(--btn-primary) / 0.15)' : 'transparent',
+            color: deviceConnected ? 'hsl(var(--btn-primary))' : 'hsl(var(--muted-foreground))',
+            display: 'inline-flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap',
+          }}
+        >
+          <IconRadio size={13} />
+          {deviceConnected ? '电台已连' : (deviceBusy ? '连接中…' : '连接电台')}
+        </button>
       </div>
 
       <div ref={scrollRef} style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', minHeight: '260px', maxHeight: '300px', overflowY: 'auto' }}>
@@ -279,11 +353,17 @@ const MessageBoard = () => {
               ))}
             </div>
           </div>
-        ) : messages.length === 0 ? (
-          <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', margin: 'auto' }}>
-            「{channel.name}」频道还挺安静，来开个头吧～
-          </div>
-        ) : messages.map(renderMsg)}
+        ) : (
+          <>
+            {messages.length === 0 && deviceMsgs.length === 0 && (
+              <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))', margin: 'auto' }}>
+                「{channel.name}」频道还挺安静，来开个头吧～
+              </div>
+            )}
+            {messages.map(renderMsg)}
+            {deviceMsgs.map(renderMsg)}
+          </>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: '0.5rem', padding: '0.6rem 0.7rem', borderTop: '1px solid hsl(var(--border))', background: 'hsl(var(--surface))' }}>

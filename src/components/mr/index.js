@@ -301,6 +301,110 @@ export function DeviceCard({ img, vendor, name, desc, tags = [], badge = '第三
   );
 }
 
+/* ---------- 作品墙卡片（Build Gallery 格式） ---------- */
+export function MrBuildCard({
+  type,
+  typeTone = 'cyan',
+  badge,
+  badgeSelf = false,
+  status,
+  name,
+  cn,
+  vendor,
+  summary,
+  icon: Icon,
+  img,
+  mediaTag,
+  specs = [],
+  tags = [],
+  parts = [],
+  bottom,
+  fwBoard,
+}) {
+  const isDev = status === 'developing';
+  const typeToneClass = `mr-buildcard__type mr-buildcard__type--${typeTone}`;
+  return (
+    <article className={`mr-card mr-buildcard${isDev ? ' mr-buildcard--dev' : ''}`}>
+      <div className="mr-buildcard__head">
+        <div className="mr-buildcard__tags">
+          {type && <span className={typeToneClass}>{type}</span>}
+          {isDev && <span className="mr-buildcard__dev">开发中</span>}
+          {badge && (
+            <span className={`mr-buildcard__badge${badgeSelf ? ' mr-buildcard__badge--self' : ''}`}>
+              {badge}
+            </span>
+          )}
+        </div>
+        <h3 className="mr-buildcard__name">
+          {name}
+          {cn && <span className="mr-buildcard__cn">{cn}</span>}
+        </h3>
+        {vendor && <div className="mr-buildcard__vendor">{vendor}</div>}
+        {summary && <p className="mr-buildcard__summary">{summary}</p>}
+      </div>
+
+      {(img || Icon || mediaTag) && (
+        <div className="mr-buildcard__media">
+          {img ? (
+            <img src={img} alt={name} loading="lazy" />
+          ) : Icon ? (
+            <div className="mr-buildcard__media-icon">
+              <Icon size={30} />
+              {mediaTag && <span>{mediaTag}</span>}
+            </div>
+          ) : (
+            <span className="mr-buildcard__media-tag">{mediaTag}</span>
+          )}
+        </div>
+      )}
+
+      <div className="mr-buildcard__body">
+        {specs.length > 0 && (
+          <table className="mr-buildcard__specs">
+            <tbody>
+              {specs.map((s, i) => (
+                <tr key={i}>
+                  <th>{s.label}</th>
+                  <td>{s.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {parts.length > 0 && (
+          <div className="mr-buildcard__parts">
+            <h4>关键部件</h4>
+            <ul>
+              {parts.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {tags.length > 0 && (
+          <div className="mr-tags">
+            {tags.map((tg) => (
+              <span key={tg} className="mr-tag mr-tag--cyan">
+                {tg}
+              </span>
+            ))}
+          </div>
+        )}
+        {fwBoard && (
+          <div className="mr-buildcard__actions">
+            <a href="/firmware-source" className="mr-buildcard__action" title="查看固件源码与编译指南">
+              <IconCode size={13} />
+              <span>{fwBoard}</span>
+            </a>
+          </div>
+        )}
+      </div>
+
+      {bottom && <footer className="mr-buildcard__foot">{bottom}</footer>}
+    </article>
+  );
+}
+
 /* ---------- 底部 CTA ---------- */
 export function MrCTA({ title, desc, actions = [] }) {
   return (
